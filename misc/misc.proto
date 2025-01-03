@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package misc;
+
+option go_package = "./rpc/;rpc";
+
+service Misc {
+	rpc GetGeoByIP (String) returns (Location);
+}
+
+message String {
+	string data = 1;
+}
+
+message Location {
+	string country = 1;
+	string region = 2;
+	string city = 3;
+	string latitude = 4;
+	string longitude = 5;
+}

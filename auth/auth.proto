@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "./rpc/;rpc";
+
+service Auth {
+	rpc Auth (Authcode) returns (Boolean);
+	rpc Promote (Email) returns (Empty);
+}
+
+message Authcode {
+	string codetype = 1;
+	string number = 2;
+	string authcode = 3;
+}
+
+message Email {
+	string receiver = 1;
+	string title = 2;
+	string content = 3;
+}
+
+message Boolean {
+	bool data = 1;
+}
+
+message Empty {}
