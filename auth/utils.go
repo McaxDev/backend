@@ -11,22 +11,22 @@ import (
 	"github.com/McaxDev/backend/misc/rpc"
 )
 
-func AuthCode(number, authcode string, data MsgSent) (bool, error) {
+func AuthCode(number, authcode string, data MsgSent) error {
 
-	msgSent, exists := data[number]
+	msgSent, exists := data.data[number]
 	if !exists {
-		return false, fmt.Errorf("请先申请验证码：%s\n", number)
+		return fmt.Errorf("请先申请验证码：%s\n", number)
 	}
 
 	if expiry := msgSent.Expiry; time.Now().After(expiry) {
-		return false, fmt.Errorf("验证码已过期%v\n", expiry)
+		return fmt.Errorf("验证码已过期%v\n", expiry)
 	}
 
 	if authcode != msgSent.Authcode {
-		return false, fmt.Errorf("验证码不正确：%s\n", authcode)
+		return fmt.Errorf("验证码不正确：%s\n", authcode)
 	}
 
-	return true, nil
+	return nil
 }
 
 func SendEmail(email, title string, content []byte) error {
@@ -98,9 +98,9 @@ func SendEmailCode(
 
 func ClearSent(datas ...MsgSent) {
 	for _, data := range datas {
-		for key, value := range data {
+		for key, value := range data.data {
 			if time.Now().After(value.Expiry) {
-				delete(data, key)
+				delete(data.data, key)
 			}
 		}
 	}

@@ -4,33 +4,29 @@ import (
 	"context"
 	"errors"
 
-	"github.com/McaxDev/backend/auth/rpc"
+	auth "github.com/McaxDev/backend/auth/rpc"
 	"github.com/dchest/captcha"
 )
 
 func (s *RPCServer) Auth(
-	c context.Context, r *rpc.Authcode,
-) (*rpc.Boolean, error) {
+	c context.Context, r *auth.Authcode,
+) (*auth.Empty, error) {
 
 	switch r.Codetype {
 	case "email":
-		success, err := AuthCode(r.Number, r.Authcode, EmailSent)
-		return &rpc.Boolean{Data: success}, err
+		return new(auth.Empty), AuthCode(r.Number, r.Authcode, EmailSent)
 	case "phone":
-		success, err := AuthCode(r.Number, r.Authcode, PhoneSent)
-		return &rpc.Boolean{Data: success}, err
+		return new(auth.Empty), AuthCode(r.Number, r.Authcode, PhoneSent)
 	case "qqmail":
-		success, err := AuthCode(r.Number, r.Authcode, QQMailSent)
-		return &rpc.Boolean{Data: success}, err
+		return new(auth.Empty), AuthCode(r.Number, r.Authcode, QQMailSent)
 	case "qq":
-		success, err := AuthCode(r.Number, r.Authcode, QQSent)
-		return &rpc.Boolean{Data: success}, err
+		return new(auth.Empty), AuthCode(r.Number, r.Authcode, QQSent)
 	case "captcha":
 		if !captcha.VerifyString(r.Number, r.Authcode) {
-			return &rpc.Boolean{Data: false}, nil
+			return new(auth.Empty), errors.New("验证失败")
 		}
-		return &rpc.Boolean{Data: true}, nil
+		return new(auth.Empty), nil
 	default:
-		return &rpc.Boolean{Data: false}, errors.New("invalid codetype")
+		return new(auth.Empty), errors.New("invalid codetype")
 	}
 }

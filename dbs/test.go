@@ -6,10 +6,7 @@ import (
 
 type Question struct {
 	gorm.Model
-	Content string `gorm:"comment:'题目内容'"`
-	OptionA string `gorm:"comment:'A项内容'"`
-	OptionB string `gorm:"comment:'B项内容'"`
-	OptionC string `gorm:"comment:'C项内容'"`
-	OptionD string `gorm:"comment:'D项内容'"`
-	Answer  rune   `gorm:"comment:'正确答案'"`
+	Content string `json:"content" gorm:"comment:'题目内容'"`
+	Class   string `json:"class" gorm:"comment:'题目分类'"`
+	Answer  rune   `json:"answer" gorm:"comment:'正确答案'"`
 }

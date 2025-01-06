@@ -1,30 +1,11 @@
-package utils
+package mids
 
 import (
-	"context"
-	"io"
-
-	auth "github.com/McaxDev/backend/auth/rpc"
 	"github.com/McaxDev/backend/dbs"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 )
-
-type LogicFunc[T any] func(user *dbs.User, c *gin.Context, params T)
-
-func SetBodyToCtx(c *gin.Context) {
-
-	body, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		c.JSON(400, Resp("无法读取请求", err, nil))
-		return
-	}
-
-	if len(body) != 0 {
-		c.Set("body", body)
-	}
-}
 
 func AuthJwt[T any](
 	logicFunc LogicFunc[T], preloads ...string,
@@ -91,62 +72,4 @@ func AuthJwt[T any](
 
 		logicFunc(&user, c, params)
 	}
-}
-
-func AuthAdmin[T any](
-	logicFunc LogicFunc[T], preloads ...string,
-) gin.HandlerFunc {
-	return AuthJwt(
-		func(user *dbs.User, c *gin.Context, params T) {
-
-			if !user.Admin {
-				c.JSON(403, Resp("你不是管理员", nil, nil))
-				return
-			}
-
-			logicFunc(user, c, params)
-		},
-		preloads...,
-	)
-}
-
-func GetBody[T any](
-	logicFunc func(c *gin.Context, req T),
-) gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-		var params T
-		var err error
-		if c.Request.Method == "GET" {
-			err = c.ShouldBindQuery(&params)
-		} else {
-			err = GetBodyByCtx(c, &params)
-		}
-		if err != nil {
-			c.JSON(400, Resp("请求参数有误", err, nil))
-			return
-		}
-
-		logicFunc(c, params)
-	}
-}
-
-func AuthCaptchaMid(c *gin.Context, req struct {
-	CaptchaID    string
-	CaptchaValue string
-}) {
-
-	_, err := AuthClient.Auth(
-		context.Background(),
-		&auth.Authcode{
-			Codetype: "captcha",
-			Number:   req.CaptchaID,
-			Authcode: req.CaptchaValue,
-		},
-	)
-	if err != nil {
-		c.JSON(400, Resp("人机验证失败", err, nil))
-		return
-	}
-
 }

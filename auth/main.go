@@ -17,7 +17,7 @@ func main() {
 	ticker := time.NewTicker(10 * time.Minute)
 	defer ticker.Stop()
 	go func() {
-		ClearSent(EmailSent, TelephoneSent, QQSent)
+		ClearSent(EmailSent, PhoneSent, QQSent)
 	}()
 
 	lis, err := net.Listen("tcp", ":"+config.GrpcPort)
@@ -34,7 +34,7 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/captcha", SendCaptcha)
-	r.GET("/email/:number", SendEmailCode)
+	r.GET("/email/:number", AuthEmail)
 	r.GET("/telephone/:number", SendTelephone)
 	r.GET("/qq/:method/:number", SendQQCode)
 	if err := r.Run(":" + config.HttpPort); err != nil {

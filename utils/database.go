@@ -1,11 +1,7 @@
 package utils
 
 import (
-	"fmt"
 	"os"
-
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 type DBConfig struct {
@@ -14,22 +10,6 @@ type DBConfig struct {
 	Host     string
 	Port     string
 	Name     string
-}
-
-func InitDB(DB *gorm.DB, config DBConfig, migrates []any) error {
-
-	var err error
-
-	if DB, err = gorm.Open(mysql.Open(fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		config.User, config.Password, config.Host, config.Port, config.Name,
-	))); err != nil {
-		return err
-	}
-
-	DB.AutoMigrate(migrates...)
-
-	return nil
 }
 
 func LoadDBConfig(dbc *DBConfig) {
