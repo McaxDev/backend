@@ -1,11 +1,12 @@
 package main
 
 import (
+	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func GetSettings(user *User, c *gin.Context) {
+func GetSettings(user *dbs.User, c *gin.Context, req struct{}) {
 
 	type SettingsStruct struct {
 		Name    string
@@ -25,25 +26,24 @@ func GetSettings(user *User, c *gin.Context) {
 	c.JSON(200, settings)
 }
 
-func SetSettings(user *User, c *gin.Context) {
+func SetSettings(user *dbs.User, c *gin.Context, req struct {
+	Name  string
+	Value bool
+}) {
 
-	var request struct {
-		Name  string
-		Value bool
-	}
-	if err := c.BindJSON(&request); err != nil {
-		c.JSON(400, utils.Resp("用户请求不正确", err))
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(400, utils.Resp("用户请求不正确", err, nil))
 		return
 	}
 
 	utils.UpdateBitByName(
-		&user.Setting, request.Name, request.Value,
+		&user.Setting, req.Name, req.Value,
 	)
 
 	if err := DB.Updates(&user).Error; err != nil {
-		c.JSON(500, utils.Resp("设置更新失败", err))
+		c.JSON(500, utils.Resp("设置更新失败", err, nil))
 		return
 	}
 
-	c.JSON(200, utils.Resp("设置更新成功", nil))
+	c.JSON(200, utils.Resp("设置更新成功", nil, nil))
 }

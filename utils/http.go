@@ -19,7 +19,7 @@ func GetBodyByCtx(c *gin.Context, dest any) error {
 
 	dataAny, exists := c.Get("body")
 	if !exists {
-		return errors.New("键body不存在")
+		return nil
 	}
 
 	data, ok := dataAny.([]byte)

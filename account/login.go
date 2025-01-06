@@ -5,51 +5,45 @@ import (
 	"errors"
 
 	"github.com/McaxDev/backend/auth/rpc"
+	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func Login(c *gin.Context) {
+func Login(c *gin.Context, req struct {
+	Account  string
+	Password string
+	Authcode string
+}) {
 
-	var request struct {
-		Account  string
-		Password string
-		Authcode string
-	}
-
-	if err := utils.LoadBodyFromCtx(c, &request); err != nil {
-		c.JSON(400, utils.Resp("请求参数有误", err, nil))
-		return
-	}
-
-	var user User
+	var user dbs.User
 	var accountType string
-	if isPhone(request.Account) {
-		user.Phone = request.Account
+	if isPhone(req.Account) {
+		user.Phone = req.Account
 		accountType = "phone"
-	} else if isEmail(request.Account) {
-		user.Email = request.Account
+	} else if isEmail(req.Account) {
+		user.Email = req.Account
 		accountType = "email"
 	} else {
-		user.Name = request.Account
+		user.Name = req.Account
 	}
 
-	if request.Authcode != "" {
+	if req.Authcode != "" {
 
 		if accountType == "" {
 			c.JSON(400, utils.Resp("请提供有效的号码", nil, nil))
 			return
 		}
 
-		response, err := AuthClient.Auth(
+		_, err := AuthClient.Auth(
 			context.Background(), &rpc.Authcode{
 				Codetype: accountType,
-				Number:   request.Account,
-				Authcode: request.Authcode,
+				Number:   req.Account,
+				Authcode: req.Authcode,
 			},
 		)
-		if err != nil || !response.Data {
+		if err != nil {
 			c.JSON(400, utils.Resp("验证码验证失败", err, nil))
 			return
 		}
@@ -65,7 +59,7 @@ func Login(c *gin.Context) {
 			c.JSON(500, utils.Resp("用户查询失败", err, nil))
 			return
 		}
-	} else if request.Password != "" {
+	} else if req.Password != "" {
 
 		if err := DB.First(&user).Error; errors.Is(
 			err, gorm.ErrRecordNotFound,
@@ -77,7 +71,7 @@ func Login(c *gin.Context) {
 			return
 		}
 
-		if request.Password != user.Password {
+		if req.Password != user.Password {
 			c.JSON(400, utils.Resp("密码不正确", nil, nil))
 			return
 		}
@@ -86,7 +80,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := GetJwt(user.ID)
+	token, err := utils.GetJwt(user.ID)
 	if err != nil {
 		c.JSON(500, utils.Resp("用户凭证生成失败", err, nil))
 		return

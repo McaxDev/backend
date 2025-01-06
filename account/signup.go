@@ -4,56 +4,48 @@ import (
 	"context"
 
 	"github.com/McaxDev/backend/auth/rpc"
+	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func Signup(c *gin.Context) {
-
-	var request struct {
-		Username  string
-		Password  string
-		Email     string
-		EmailCode string
-	}
-
-	if err := c.BindJSON(&request); err != nil {
-		c.JSON(400, utils.Resp("请求参数错误", err, nil))
-		return
-	}
+func Signup(c *gin.Context, req struct {
+	Username  string
+	Password  string
+	Email     string
+	EmailCode string
+}) {
 
 	if err := DB.First(
-		new(User), "username = ?", request.Username,
+		new(dbs.User), "username = ?", req.Username,
 	).Error; err == nil {
 		c.JSON(400, utils.Resp("此用户已经注册过了", nil, nil))
 		return
 	}
 
 	if err := DB.First(
-		new(User), "email = ?", request.Email,
+		new(dbs.User), "email = ?", req.Email,
 	).Error; err == nil {
 		c.JSON(400, utils.Resp("此邮箱已经注册过了", nil, nil))
 		return
 	}
 
-	MailResponse, err := AuthClient.Auth(
+	if _, err := AuthClient.Auth(
 		context.Background(),
 		&rpc.Authcode{
 			Codetype: "email",
-			Number:   request.Email,
-			Authcode: request.EmailCode,
+			Number:   req.Email,
+			Authcode: req.EmailCode,
 		},
-	)
-
-	if err != nil || !MailResponse.Data {
+	); err != nil {
 		c.JSON(400, utils.Resp("邮箱验证失败", err, nil))
 		return
 	}
 
-	user := User{
-		Username: request.Username,
-		Password: request.Password,
-		Email:    request.Email,
+	user := dbs.User{
+		Name:     req.Username,
+		Password: req.Password,
+		Email:    req.Email,
 		Admin:    false,
 	}
 
@@ -62,7 +54,7 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	token, err := GetJwt(user.ID)
+	token, err := utils.GetJwt(user.ID)
 	if err != nil {
 		c.JSON(500, utils.Resp("JWT生成失败", err, nil))
 		return

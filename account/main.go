@@ -23,11 +23,11 @@ func main() {
 
 	router := GetRouter()
 
-	if Config.SSL.Certificate == "" {
+	if Config.SSL.Cert == "" {
 		err = router.Run(":" + Config.Port)
 	} else {
 		err = router.RunTLS(
-			":"+Config.Port, Config.SSL.Certificate, Config.SSL.Private,
+			":"+Config.Port, Config.SSL.Cert, Config.SSL.Key,
 		)
 	}
 

@@ -4,29 +4,28 @@ import (
 	"context"
 
 	"github.com/McaxDev/backend/auth/rpc"
+	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func BindAuth(user *User, c *gin.Context) {
+func BindAuth(user *dbs.User, c *gin.Context, req *rpc.Authcode) {
 
-	var request rpc.Authcode
-
-	response, err := AuthClient.Auth(
-		context.Background(), &request,
+	_, err := AuthClient.Auth(
+		context.Background(), req,
 	)
 
-	if err != nil || !response.Data {
+	if err != nil {
 		c.JSON(400, utils.Resp("号码验证失败", err, nil))
 		return
 	}
 
 	query := DB.Model(&user)
 
-	if request.Codetype == "telephone" {
-		query = query.Update("Telephone", request.Number)
+	if req.Codetype == "telephone" {
+		query = query.Update("Telephone", req.Number)
 	} else {
-		query = query.Update("Email", request.Number)
+		query = query.Update("Email", req.Number)
 	}
 
 	if err := query.Error; err != nil {

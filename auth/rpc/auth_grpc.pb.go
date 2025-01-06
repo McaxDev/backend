@@ -27,7 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthClient interface {
-	Auth(ctx context.Context, in *Authcode, opts ...grpc.CallOption) (*Boolean, error)
+	Auth(ctx context.Context, in *Authcode, opts ...grpc.CallOption) (*Empty, error)
 	Promote(ctx context.Context, in *Email, opts ...grpc.CallOption) (*Empty, error)
 }
 
@@ -39,9 +39,9 @@ func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 	return &authClient{cc}
 }
 
-func (c *authClient) Auth(ctx context.Context, in *Authcode, opts ...grpc.CallOption) (*Boolean, error) {
+func (c *authClient) Auth(ctx context.Context, in *Authcode, opts ...grpc.CallOption) (*Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Boolean)
+	out := new(Empty)
 	err := c.cc.Invoke(ctx, Auth_Auth_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (c *authClient) Promote(ctx context.Context, in *Email, opts ...grpc.CallOp
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility.
 type AuthServer interface {
-	Auth(context.Context, *Authcode) (*Boolean, error)
+	Auth(context.Context, *Authcode) (*Empty, error)
 	Promote(context.Context, *Email) (*Empty, error)
 	mustEmbedUnimplementedAuthServer()
 }
@@ -75,7 +75,7 @@ type AuthServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServer struct{}
 
-func (UnimplementedAuthServer) Auth(context.Context, *Authcode) (*Boolean, error) {
+func (UnimplementedAuthServer) Auth(context.Context, *Authcode) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
 }
 func (UnimplementedAuthServer) Promote(context.Context, *Email) (*Empty, error) {

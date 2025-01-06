@@ -8,7 +8,7 @@ import (
 
 var Config struct {
 	AuthAddr string
-	JwtKey   string
+	JWTKey   string
 	Port     string
 	DB       utils.DBConfig
 	SSL      utils.SSLConfig
@@ -17,7 +17,7 @@ var Config struct {
 func LoadConfig() {
 
 	Config.AuthAddr = os.Getenv("AUTH_ADDR")
-	Config.JwtKey = os.Getenv("JWT_KEY")
+	Config.JWTKey = os.Getenv("JWT_KEY")
 	Config.Port = os.Getenv("PORT")
 
 	utils.LoadDBConfig(&Config.DB)

@@ -1,4 +1,4 @@
-package database
+package dbs
 
 import (
 	"gorm.io/gorm"

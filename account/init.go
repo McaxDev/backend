@@ -4,7 +4,6 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/McaxDev/backend/account/rpc"
 	auth "github.com/McaxDev/backend/auth/rpc"
 	"gorm.io/gorm"
 )
@@ -17,10 +16,6 @@ var (
 	isPhone        func(string) bool
 	isEmail        func(string) bool
 )
-
-type RPCServer struct {
-	rpc.UnimplementedAccountServer
-}
 
 func Init() error {
 	var err error

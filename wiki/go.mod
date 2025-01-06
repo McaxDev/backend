@@ -5,16 +5,15 @@ go 1.23.3
 replace (
 	github.com/McaxDev/backend/account => ../account
 	github.com/McaxDev/backend/auth => ../auth
-	github.com/McaxDev/backend/database => ../database
+	github.com/McaxDev/backend/dbs => ../dbs
 	github.com/McaxDev/backend/utils => ../utils
 )
 
 require (
 	github.com/McaxDev/backend/account v0.0.0-00010101000000-000000000000
-	github.com/McaxDev/backend/database v0.0.0-00010101000000-000000000000
+	github.com/McaxDev/backend/dbs v0.0.0-00010101000000-000000000000
 	github.com/McaxDev/backend/utils v0.0.0-20241121200645-a92c3feebf39
 	github.com/gin-gonic/gin v1.10.0
-	google.golang.org/grpc v1.68.0
 	gorm.io/gorm v1.25.12
 )
 
@@ -31,6 +30,7 @@ require (
 	github.com/go-playground/validator/v10 v10.23.0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -48,6 +48,7 @@ require (
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241118233622-e639e219e697 // indirect
+	google.golang.org/grpc v1.68.0 // indirect
 	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.5.7 // indirect

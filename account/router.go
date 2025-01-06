@@ -1,6 +1,9 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/McaxDev/backend/utils"
+	"github.com/gin-gonic/gin"
+)
 
 func GetRouter() *gin.Engine {
 
@@ -8,6 +11,7 @@ func GetRouter() *gin.Engine {
 
 	router.GET("/get/userinfo", AuthJwtMid(GetUserInfo))
 	router.GET("/get/settings", AuthJwtMid(GetSettings))
+	router.POST("/set/settings", utils.AuthJwt(SetSettings))
 	router.GET("/syncbind", AuthJwtMid(SyncBind))
 	router.POST("/set/contact", AuthJwtMid(SetContact))
 	router.POST("/set/username", AuthJwtMid(SetUsername))

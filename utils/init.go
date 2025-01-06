@@ -1,6 +1,14 @@
 package utils
 
+import (
+	auth "github.com/McaxDev/backend/auth/rpc"
+	"gorm.io/gorm"
+)
+
 var (
+	DB          *gorm.DB
+	JWTKey      string
+	AuthClient  auth.AuchClient
 	SetMapTable = map[string]struct {
 		Index   int
 		Comment string

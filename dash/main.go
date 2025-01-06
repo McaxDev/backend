@@ -60,7 +60,7 @@ func main() {
 		DB:       redisDb,
 		Password: redisPassword,
 	})
-	if _, err := rdb.Ping(context.Background()).Result(); err != nil {
+	if _, err := rdbs.Ping(context.Background()).Result(); err != nil {
 		log.Fatalln("连接Redis失败：", err.Error())
 	}
 
@@ -83,7 +83,7 @@ func main() {
 	router.GET("/player/:name", func(ctx *gin.Context) {
 		playerName := ctx.Param("name")
 		server := ctx.DefaultQuery("server", defaultServer)
-		result := rdb.HGet(
+		result := rdbs.HGet(
 			context.Background(),
 			server+":name_uuid",
 			playerName,
@@ -123,11 +123,11 @@ func main() {
 		var result []redis.Z
 		ctxt := context.Background()
 		if limit > 0 {
-			result, err = rdb.ZRevRangeWithScores(
+			result, err = rdbs.ZRevRangeWithScores(
 				ctxt, key, 0, int64(limit-1),
 			).Result()
 		} else {
-			result, err = rdb.ZRangeWithScores(
+			result, err = rdbs.ZRangeWithScores(
 				ctxt, key, 0, int64(-limit-1),
 			).Result()
 		}

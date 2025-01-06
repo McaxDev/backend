@@ -3,13 +3,14 @@ module github.com/McaxDev/backend/auth
 go 1.23.3
 
 replace (
+	github.com/McaxDev/backend/dbs => ../dbs
 	github.com/McaxDev/backend/misc => ../misc
 	github.com/McaxDev/backend/utils => ../utils
 )
 
 require (
 	github.com/McaxDev/backend/misc v0.0.0-00010101000000-000000000000
-	github.com/McaxDev/backend/utils v0.0.0-20241030032851-0d1e5b7a0a85
+	github.com/McaxDev/backend/utils v0.0.0-00010101000000-000000000000
 	github.com/apistd/uni-go-sdk v0.0.2
 	github.com/dchest/captcha v1.0.0
 	github.com/gin-gonic/gin v1.10.0
@@ -19,6 +20,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/McaxDev/backend/dbs v0.0.0-00010101000000-000000000000 // indirect
 	github.com/bytedance/sonic v1.12.4 // indirect
 	github.com/bytedance/sonic/loader v0.2.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
@@ -30,6 +32,7 @@ require (
 	github.com/go-playground/validator/v10 v10.22.1 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

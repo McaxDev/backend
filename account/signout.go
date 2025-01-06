@@ -4,22 +4,16 @@ import (
 	"context"
 
 	"github.com/McaxDev/backend/auth/rpc"
+	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func Signout(user *User, c *gin.Context) {
+func Signout(user *dbs.User, c *gin.Context, req *rpc.Authcode) {
 
-	var request rpc.Authcode
-	if err := c.BindJSON(&request); err != nil {
-		c.JSON(400, utils.Resp("用户请求有误", err, nil))
-		return
-	}
-
-	response, err := AuthClient.Auth(
-		context.Background(), &request,
-	)
-	if err != nil || !response.Data {
+	if _, err := AuthClient.Auth(
+		context.Background(), req,
+	); err != nil {
 		c.JSON(400, utils.Resp("联系方式验证失败", err, nil))
 		return
 	}

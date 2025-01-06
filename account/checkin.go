@@ -3,31 +3,32 @@ package main
 import (
 	"time"
 
+	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func Checkin(user *User, c *gin.Context) {
+func Checkin(user *dbs.User, c *gin.Context, req struct{}) {
 
 	iterator := time.Now().Day()
 
 	if utils.GetBitByIndex(user.Checkin, iterator) {
-		c.JSON(200, utils.Resp("你今天已经签到过啦", nil))
+		c.JSON(200, utils.Resp("你今天已经签到过啦", nil, nil))
 		return
 	}
 
 	utils.UpdateBitByIndex(&user.Checkin, iterator, true)
-	user.Money += 1
+	user.TempCoin += 1
 
 	if err := DB.Save(&user).Error; err != nil {
-		c.JSON(500, utils.Resp("签到失败", err))
+		c.JSON(500, utils.Resp("签到失败", err, nil))
 		return
 	}
 
-	c.JSON(200, utils.Resp("签到成功", nil))
+	c.JSON(200, utils.Resp("签到成功", nil, nil))
 }
 
-func GetCheckin(user *User, c *gin.Context) {
+func GetCheckin(user *dbs.User, c *gin.Context, req struct{}) {
 
 	type Data struct {
 		Date   int
@@ -42,5 +43,5 @@ func GetCheckin(user *User, c *gin.Context) {
 		})
 	}
 
-	c.JSON(200, utils.Resp("查询成功", datas))
+	c.JSON(200, utils.Resp("查询成功", nil, datas))
 }

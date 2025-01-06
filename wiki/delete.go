@@ -3,26 +3,20 @@ package main
 import (
 	"fmt"
 
-	account "github.com/McaxDev/backend/account/rpc"
-	"github.com/McaxDev/backend/database"
+	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func Delete(user *account.User, c *gin.Context) {
-
-	var req uint
-	if err := utils.GetBodyByCtx(c, &req); err != nil {
-		c.JSON(400, utils.Resp("请求格式有误", err, nil))
-		return
-	}
+func Delete(user *dbs.User, c *gin.Context, req uint) {
 
 	var err error
+	query := DB.Where("id = ?", req)
 	switch table := c.Param("table"); table {
 	case "category":
-		err = HandleDelete[database.Category](req)
+		err = query.Delete(new(dbs.Category)).Error
 	case "wiki":
-		err = HandleDelete[database.Wiki](req)
+		err = query.Delete(new(dbs.Wiki)).Error
 	default:
 		err = fmt.Errorf("不支持删除：%s\n", table)
 	}
@@ -32,8 +26,4 @@ func Delete(user *account.User, c *gin.Context) {
 	}
 
 	c.JSON(200, utils.Resp("数据删除成功", nil, nil))
-}
-
-func HandleDelete[T any](id uint) error {
-	return DB.Where("id = ?", id).Delete(new(T)).Error
 }
