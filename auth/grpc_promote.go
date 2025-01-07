@@ -6,7 +6,7 @@ import (
 	"github.com/McaxDev/backend/auth/rpc"
 )
 
-func (s *RPCServer) Promote(
+func (s *AuthServer) Promote(
 	c context.Context, r *rpc.Email,
 ) (*rpc.Empty, error) {
 	return new(rpc.Empty), SendEmail(

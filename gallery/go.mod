@@ -1,37 +1,30 @@
-module github.com/McaxDev/backend/account
-
-go 1.23.3
+module github.com/McaxDev/backend/gallery
 
 replace (
-	github.com/McaxDev/backend/auth => ../auth
 	github.com/McaxDev/backend/dbs => ../dbs
 	github.com/McaxDev/backend/mids => ../mids
 	github.com/McaxDev/backend/utils => ../utils
 )
 
+go 1.23.3
+
 require (
-	github.com/McaxDev/backend/auth v0.0.0-00010101000000-000000000000
 	github.com/McaxDev/backend/dbs v0.0.0-00010101000000-000000000000
-	github.com/McaxDev/backend/mids v0.0.0-00010101000000-000000000000
-	github.com/McaxDev/backend/utils v0.0.0-20250106163001-cf5f0d7c546b
+	github.com/McaxDev/backend/utils v0.0.0-00010101000000-000000000000
 	github.com/gin-gonic/gin v1.10.0
-	google.golang.org/grpc v1.69.2
 	gorm.io/gorm v1.25.12
 )
 
 require (
-	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/bytedance/sonic v1.12.6 // indirect
-	github.com/bytedance/sonic/loader v0.2.1 // indirect
+	github.com/bytedance/sonic/loader v0.2.2 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
-	github.com/cloudwego/iasm v0.2.0 // indirect
-	github.com/dchest/captcha v1.1.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/gin-contrib/sse v1.0.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.23.0 // indirect
-	github.com/go-sql-driver/mysql v1.8.1 // indirect
+	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -50,8 +43,7 @@ require (
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250106144421-5f5ef82da422 // indirect
-	google.golang.org/protobuf v1.36.1 // indirect
+	google.golang.org/protobuf v1.36.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.5.7 // indirect
 )

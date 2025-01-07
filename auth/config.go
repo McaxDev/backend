@@ -2,13 +2,16 @@ package main
 
 import (
 	"os"
+
+	"github.com/McaxDev/backend/utils"
 )
 
-var config struct {
-	GrpcPort string
-	HttpPort string
-	MiscAddr string
-	SMS      struct {
+var Config struct {
+	GRPCPort   string
+	HTTPPort   string
+	GeoSrvAddr string
+	SSL        utils.SSLConfig
+	SMS        struct {
 		ID        string
 		Secret    string
 		Signature string
@@ -23,15 +26,15 @@ var config struct {
 }
 
 func LoadConfig() {
-	config.GrpcPort = os.Getenv("GRPC_PORT")
-	config.HttpPort = os.Getenv("HTTP_PORT")
-	config.MiscAddr = os.Getenv("MISC_ADDR")
-	config.SMS.ID = os.Getenv("SMS_ID")
-	config.SMS.Secret = os.Getenv("SMS_SECRET")
-	config.SMS.Signature = os.Getenv("SMS_SIGNATURE")
-	config.SMS.Template = os.Getenv("SMS_TEMPLATE")
-	config.SMTP.Server = os.Getenv("SMTP_SERVER")
-	config.SMTP.Port = os.Getenv("SMTP_PORT")
-	config.SMTP.Mail = os.Getenv("SMTP_MAIL")
-	config.SMTP.Password = os.Getenv("SMTP_PASSWORD")
+	Config.GRPCPort = os.Getenv("GRPC_PORT")
+	Config.HTTPPort = os.Getenv("HTTP_PORT")
+	Config.SMS.ID = os.Getenv("SMS_ID")
+	Config.SMS.Secret = os.Getenv("SMS_SECRET")
+	Config.SMS.Signature = os.Getenv("SMS_SIGNATURE")
+	Config.SMS.Template = os.Getenv("SMS_TEMPLATE")
+	Config.SMTP.Server = os.Getenv("SMTP_SERVER")
+	Config.SMTP.Port = os.Getenv("SMTP_PORT")
+	Config.SMTP.Mail = os.Getenv("SMTP_MAIL")
+	Config.SMTP.Password = os.Getenv("SMTP_PASSWORD")
+	utils.LoadSSLConfig(&Config.SSL)
 }

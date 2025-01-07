@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 	"net"
-	"time"
 
-	"github.com/McaxDev/backend/auth/rpc"
+	auth "github.com/McaxDev/backend/auth/rpc"
+	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 )
@@ -14,18 +14,26 @@ func main() {
 
 	Init()
 
-	ticker := time.NewTicker(10 * time.Minute)
-	defer ticker.Stop()
-	go func() {
-		ClearSent(EmailSent, PhoneSent, QQSent)
-	}()
+	LoadConfig()
 
-	lis, err := net.Listen("tcp", ":"+config.GrpcPort)
+	go utils.ScheduleTask(600, func() {
+		CleanMsgSent(
+			&EmailSent,
+			&PhoneSent,
+			&QQSent,
+			&QQMailSent,
+		)
+	})
+
+	lis, err := net.Listen("tcp", ":"+Config.GRPCPort)
 	if err != nil {
 		log.Fatalln("failed to listen: " + err.Error())
 	}
+	defer lis.Close()
+
 	s := grpc.NewServer()
-	rpc.RegisterAuthServer(s, new(RPCServer))
+	auth.RegisterAuthServer(s, new(AuthServer))
+
 	go func() {
 		if err := s.Serve(lis); err != nil {
 			log.Fatalln("failed to serve: " + err.Error())
@@ -33,11 +41,22 @@ func main() {
 	}()
 
 	r := gin.Default()
+
 	r.GET("/captcha", SendCaptcha)
 	r.GET("/email/:number", AuthEmail)
-	r.GET("/telephone/:number", SendTelephone)
-	r.GET("/qq/:method/:number", SendQQCode)
-	if err := r.Run(":" + config.HttpPort); err != nil {
+	r.GET("/phone/:number", SendPhone)
+	r.GET("/qq/:number", SendQQCode)
+	r.GET("/qqmail/:number", SendQQMailCode)
+
+	if Config.SSL.Enable {
+		err = r.RunTLS(
+			":"+Config.HTTPPort, Config.SSL.Cert, Config.SSL.Key,
+		)
+	} else {
+		err = r.Run(":" + Config.HTTPPort)
+	}
+
+	if err != nil {
 		log.Fatalln("failed to run http server: " + err.Error())
 	}
 }

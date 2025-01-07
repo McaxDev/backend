@@ -10,25 +10,19 @@ import (
 	"gorm.io/gorm"
 )
 
-func ResetPassword(c *gin.Context) {
-
-	var request struct {
-		Codetype string
-		Number   string
-		Authcode string
-		Password string
-	}
-	if err := c.BindJSON(&request); err != nil {
-		c.JSON(400, utils.Resp("用户请求有误", err, nil))
-		return
-	}
+func SetPassword(c *gin.Context, req struct {
+	Codetype string
+	Number   string
+	Authcode string
+	Password string
+}) {
 
 	if _, err := AuthClient.Auth(
 		context.Background(),
 		&rpc.Authcode{
-			Codetype: request.Codetype,
-			Number:   request.Number,
-			Authcode: request.Authcode,
+			Codetype: req.Codetype,
+			Number:   req.Number,
+			Authcode: req.Authcode,
 		},
 	); err != nil {
 		c.JSON(400, utils.Resp("验证失败", err, nil))
@@ -36,14 +30,14 @@ func ResetPassword(c *gin.Context) {
 	}
 
 	numberType := "telephone"
-	if request.Codetype == "email" {
+	if req.Codetype == "email" {
 		numberType = "email"
 	}
 
 	if err := DB.Model(new(dbs.User)).Where(
-		numberType+" = ?", request.Number,
+		numberType+" = ?", req.Number,
 	).Update(
-		"Password", request.Password,
+		"Password", req.Password,
 	).Error; err == gorm.ErrRecordNotFound {
 		c.JSON(400, utils.Resp("不存在这个用户", nil, nil))
 		return

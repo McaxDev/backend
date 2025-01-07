@@ -8,7 +8,7 @@ import (
 	"github.com/dchest/captcha"
 )
 
-func (s *RPCServer) Auth(
+func (s *AuthServer) Auth(
 	c context.Context, r *auth.Authcode,
 ) (*auth.Empty, error) {
 

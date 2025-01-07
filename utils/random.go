@@ -2,12 +2,20 @@ package utils
 
 import (
 	"math/rand"
+	"strings"
 )
 
-func RandomCode(length int) string {
-	result := make([]byte, length)
-	for i := range result {
-		result[i] = LETTERS[rand.Intn(len(LETTERS))]
+func RandomCode(length uint, withLetters bool) string {
+	var charset string
+	if withLetters {
+		charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	} else {
+		charset = "0123456789"
 	}
-	return string(result)
+
+	var sb strings.Builder
+	for i := uint(0); i < length; i++ {
+		sb.WriteByte(charset[rand.Intn(len(charset))])
+	}
+	return sb.String()
 }

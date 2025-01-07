@@ -2,13 +2,12 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"html/template"
 	"net/smtp"
 	"time"
 
-	"github.com/McaxDev/backend/misc/rpc"
+	"github.com/McaxDev/backend/utils"
 )
 
 func AuthCode(number, authcode string, data MsgSent) error {
@@ -43,13 +42,13 @@ func SendEmail(email, title string, content []byte) error {
 	buffer.Write(content)
 
 	if err := smtp.SendMail(
-		config.SMTP.Server+":"+config.SMTP.Port,
+		Config.SMTP.Server+":"+Config.SMTP.Port,
 		smtp.PlainAuth("",
-			config.SMTP.Mail,
-			config.SMTP.Password,
-			config.SMTP.Server,
+			Config.SMTP.Mail,
+			Config.SMTP.Password,
+			Config.SMTP.Server,
 		),
-		config.SMTP.Mail,
+		Config.SMTP.Mail,
 		[]string{email},
 		buffer.Bytes(),
 	); err != nil {
@@ -62,16 +61,17 @@ func SendEmailCode(
 	email, code, clientIp string, expiry time.Time,
 ) error {
 
-	response, err := MiscClient.GetGeoByIP(
-		context.Background(), &rpc.String{Data: clientIp},
-	)
+	tmpl, err := template.ParseFiles("/data/email.html")
 	if err != nil {
 		return err
 	}
 
-	tmpl, err := template.ParseFiles("/data/email.html")
-	if err != nil {
-		return err
+	if Config.GeoSrvAddr != "" {
+		resp, err := utils.Get[map[string]string](Config.GeoSrvAddr)
+		if err != nil {
+			return err
+		}
+		clientIp = (*resp)["province"] + (*resp)["city"]
 	}
 
 	var buffer bytes.Buffer
@@ -84,7 +84,7 @@ func SendEmailCode(
 		Email:    email,
 		Authcode: code,
 		Expiry:   expiry.Format("2006-01-02 15:04:05"),
-		Location: response.Country + response.City,
+		Location: clientIp,
 	}); err != nil {
 		return err
 	}
@@ -94,14 +94,4 @@ func SendEmailCode(
 	}
 
 	return nil
-}
-
-func ClearSent(datas ...MsgSent) {
-	for _, data := range datas {
-		for key, value := range data.data {
-			if time.Now().After(value.Expiry) {
-				delete(data.data, key)
-			}
-		}
-	}
 }

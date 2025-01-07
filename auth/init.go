@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/McaxDev/backend/auth/rpc"
-	misc "github.com/McaxDev/backend/misc/rpc"
+	"github.com/McaxDev/backend/limiter"
 	unisms "github.com/apistd/uni-go-sdk/sms"
 )
 
@@ -19,7 +19,7 @@ type MsgSentValue struct {
 	Authcode string
 }
 
-type RPCServer struct {
+type AuthServer struct {
 	rpc.UnimplementedAuthServer
 }
 
@@ -29,7 +29,6 @@ var (
 	QQSent     MsgSent
 	QQMailSent MsgSent
 	SMSClient  *unisms.UniSMSClient
-	MiscClient misc.MiscClient
 )
 
 func Init() {
@@ -37,7 +36,12 @@ func Init() {
 	PhoneSent = MsgSentInit()
 	QQSent = MsgSentInit()
 	QQMailSent = MsgSentInit()
-	SMSClient = unisms.NewClient(config.SMS.ID, config.SMS.Secret)
+	SMSClient = unisms.NewClient(Config.SMS.ID, Config.SMS.Secret)
+	limiter.SetRule("phone", []limiter.LimitRule{
+		{Count: 1, Duration: 10 * time.Minute},
+		{Count: 3, Duration: time.Hour},
+		{Count: 5, Duration: 24 * time.Hour},
+	})
 }
 
 func MsgSentInit() MsgSent {

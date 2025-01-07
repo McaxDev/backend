@@ -10,7 +10,7 @@ import (
 func SendQQCode(c *gin.Context) {
 
 	qq := c.Param("number")
-	authcode := utils.RandomCode(6)
+	authcode := utils.RandomCode(6, true)
 	expiry := time.Now().Add(10 * time.Minute)
 
 	QQSent.lock.Lock()

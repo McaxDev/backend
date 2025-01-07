@@ -22,10 +22,11 @@ type User struct {
 	QQ          string `json:"qq" gorm:"comment:'QQ号'"`
 	BedrockName string `json:"bedrockName" gorm:"comment:'基岩版用户名'"`
 	JavaName    string `json:"javaName" gorm:"comment:'Java版用户名'"`
-	Issue       []Issue
+	Issues      []Issue
 	GuildID     uint `json:"guildId" gorm:"comment:'公会ID'"`
 	GuildRole   uint `json:"guildRole" gorm:"comment:'公会角色'"`
 	Guild       Guild
+	Properties  []Property
 }
 
 func (user *User) ExecWithCoins(
