@@ -4,9 +4,10 @@ import (
 	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func AddAlbum(user *dbs.User, c *gin.Context, req struct {
+func AddAlbum(c *gin.Context, user *dbs.User, req struct {
 	Folder string
 	Title  string
 	UserID uint
@@ -19,9 +20,11 @@ func AddAlbum(user *dbs.User, c *gin.Context, req struct {
 		return
 	}
 
-	if err := DB.Model(new(dbs.Album)).Create(
-		&req,
-	).Error; err != nil {
+	if err := user.ExecWithCoins(
+		DB, 30, false, func(tx *gorm.DB) error {
+			return DB.Model(new(dbs.Album)).Create(&req).Error
+		},
+	); err != nil {
 		c.JSON(500, utils.Resp("创建相册失败", err, nil))
 		return
 	}

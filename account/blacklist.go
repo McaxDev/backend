@@ -32,7 +32,7 @@ func GetBlackList(c *gin.Context) {
 	c.JSON(200, utils.Resp("查找成功", nil, response))
 }
 
-func SetBlackList(user *dbs.User, c *gin.Context, req dbs.BlackList) {
+func SetBlackList(c *gin.Context, user *dbs.User, req dbs.BlackList) {
 
 	var blackList dbs.BlackList
 	if err := DB.First(
@@ -57,7 +57,7 @@ func SetBlackList(user *dbs.User, c *gin.Context, req dbs.BlackList) {
 	c.JSON(200, utils.Resp("更新成功", nil, nil))
 }
 
-func DeleteBlackList(user *dbs.User, c *gin.Context, req dbs.BlackList) {
+func DelBlackList(c *gin.Context, user *dbs.User, req dbs.BlackList) {
 
 	if err := DB.First(&req).Error; err == gorm.ErrRecordNotFound {
 		c.JSON(400, utils.Resp("不存在这个黑名单记录", nil, nil))

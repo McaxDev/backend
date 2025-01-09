@@ -4,21 +4,36 @@ import (
 	"regexp"
 	"time"
 
-	auth "github.com/McaxDev/backend/auth/rpc"
+	"github.com/McaxDev/backend/dbs"
+	"github.com/McaxDev/backend/utils/auth"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 var (
 	DB             *gorm.DB
+	Redis          *redis.Client
+	Author         auth.Author
 	ChinaTime      *time.Location
 	BlackListTypes []string
-	AuthClient     auth.AuthClient
 	isPhone        func(string) bool
 	isEmail        func(string) bool
 )
 
 func Init() error {
 	var err error
+
+	if DB, err = dbs.InitDB(Config.DB); err != nil {
+		return err
+	}
+
+	Redis = redis.NewClient(&redis.Options{
+		Addr:     Config.Redis.Host + ":" + Config.Redis.Port,
+		Password: Config.Redis.Password,
+		DB:       Config.Redis.DB,
+	})
+
+	Author = auth.NewAuthor(Redis)
 
 	ChinaTime, err = time.LoadLocation("Asia/Shanghai")
 	if err != nil {

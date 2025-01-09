@@ -1,9 +1,6 @@
 package main
 
 import (
-	"context"
-
-	"github.com/McaxDev/backend/auth/rpc"
 	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
@@ -11,31 +8,20 @@ import (
 )
 
 func SetPassword(c *gin.Context, req struct {
-	Codetype string
 	Number   string
 	Authcode string
 	Password string
 }) {
 
-	if _, err := AuthClient.Auth(
-		context.Background(),
-		&rpc.Authcode{
-			Codetype: req.Codetype,
-			Number:   req.Number,
-			Authcode: req.Authcode,
-		},
+	if err := Author.Auth(
+		req.Number, req.Authcode, "email",
 	); err != nil {
-		c.JSON(400, utils.Resp("验证失败", err, nil))
+		c.JSON(400, utils.Resp("邮箱验证失败", err, nil))
 		return
 	}
 
-	numberType := "telephone"
-	if req.Codetype == "email" {
-		numberType = "email"
-	}
-
 	if err := DB.Model(new(dbs.User)).Where(
-		numberType+" = ?", req.Number,
+		"email = ?", req.Number,
 	).Update(
 		"Password", req.Password,
 	).Error; err == gorm.ErrRecordNotFound {

@@ -6,13 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Get(c *gin.Context) {
+func Get(c *gin.Context, ID uint) {
 
-	var resp []dbs.Category
-	if err := DB.Preload("Wiki").Find(&resp).Error; err != nil {
-		c.JSON(500, utils.Resp("获取wiki失败", err, nil))
+	var data dbs.Wiki
+	if err := DB.Where("id = ?", ID).First(
+		&data,
+	).Error; err != nil {
+		c.JSON(500, utils.Resp("wiki获取失败", err, nil))
 		return
 	}
 
-	c.JSON(200, utils.Resp("获取wiki成功", nil, resp))
+	c.JSON(200, utils.Resp("wiki获取成功", nil, &data))
 }

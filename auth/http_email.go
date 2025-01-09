@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"time"
 
 	"github.com/McaxDev/backend/utils"
@@ -20,12 +21,13 @@ func AuthEmail(c *gin.Context) {
 		return
 	}
 
-	EmailSent.lock.Lock()
-	EmailSent.data[email] = MsgSentValue{
-		Authcode: authcode,
-		Expiry:   expiry,
+	if err := Redis.Set(
+		context.Background(),
+		"auth_email_"+email, authcode, 10*time.Minute,
+	).Err(); err != nil {
+		c.JSON(500, utils.Resp("验证码存储失败", err, nil))
+		return
 	}
-	EmailSent.lock.Unlock()
 
 	c.JSON(200, utils.Resp("邮件发送成功", nil, nil))
 }

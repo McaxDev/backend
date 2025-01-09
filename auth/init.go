@@ -1,52 +1,27 @@
 package main
 
 import (
-	"sync"
-	"time"
-
-	"github.com/McaxDev/backend/auth/rpc"
-	"github.com/McaxDev/backend/limiter"
+	"github.com/McaxDev/backend/utils/auth"
 	unisms "github.com/apistd/uni-go-sdk/sms"
+	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
-type MsgSent struct {
-	data map[string]MsgSentValue
-	lock *sync.RWMutex
-}
-
-type MsgSentValue struct {
-	Expiry   time.Time
-	Authcode string
-}
-
 type AuthServer struct {
-	rpc.UnimplementedAuthServer
+	auth.UnimplementedAuthServer
 }
 
 var (
-	EmailSent  MsgSent
-	PhoneSent  MsgSent
-	QQSent     MsgSent
-	QQMailSent MsgSent
-	SMSClient  *unisms.UniSMSClient
+	SMSClient *unisms.UniSMSClient
+	Redis     *redis.Client
+	DB        *gorm.DB
 )
 
 func Init() {
-	EmailSent = MsgSentInit()
-	PhoneSent = MsgSentInit()
-	QQSent = MsgSentInit()
-	QQMailSent = MsgSentInit()
 	SMSClient = unisms.NewClient(Config.SMS.ID, Config.SMS.Secret)
-	limiter.SetRule("phone", []limiter.LimitRule{
-		{Count: 1, Duration: 10 * time.Minute},
-		{Count: 3, Duration: time.Hour},
-		{Count: 5, Duration: 24 * time.Hour},
+	Redis = redis.NewClient(&redis.Options{
+		Addr:     Config.Redis.Host + ":" + Config.Redis.Port,
+		Password: Config.Redis.Password,
+		DB:       Config.Redis.DB,
 	})
-}
-
-func MsgSentInit() MsgSent {
-	return MsgSent{
-		data: make(map[string]MsgSentValue),
-		lock: new(sync.RWMutex),
-	}
 }

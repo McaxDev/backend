@@ -1,0 +1,35 @@
+package main
+
+import (
+	"github.com/McaxDev/backend/dbs"
+	"github.com/McaxDev/backend/utils"
+	"github.com/gin-gonic/gin"
+)
+
+func EditImage(c *gin.Context, user *dbs.User, req struct {
+	ID          uint
+	Title       string
+	Description string
+	Order       int
+}) {
+
+	var image dbs.Image
+	if err := DB.Where("id = ?", req.ID).First(
+		&image,
+	).Error; err != nil {
+		c.JSON(500, utils.Resp("查询图片失败", err, nil))
+		return
+	}
+
+	if !CheckImagePerm(user, &image) {
+		c.JSON(400, utils.Resp("你没有权限", nil, nil))
+		return
+	}
+
+	if err := DB.Model(&image).Updates(&req).Error; err != nil {
+		c.JSON(500, utils.Resp("图片更新失败", err, nil))
+		return
+	}
+
+	c.JSON(200, utils.Resp("图片更新成功", nil, nil))
+}

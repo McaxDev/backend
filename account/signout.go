@@ -1,25 +1,23 @@
 package main
 
 import (
-	"context"
-
-	"github.com/McaxDev/backend/auth/rpc"
 	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
+	"github.com/McaxDev/backend/utils/auth"
 	"github.com/gin-gonic/gin"
 )
 
-func Signout(user *dbs.User, c *gin.Context, req *rpc.Authcode) {
+func Signout(c *gin.Context, user *dbs.User, req auth.CodeMsg) {
 
-	if _, err := AuthClient.Auth(
-		context.Background(), req,
+	if err := Author.Auth(
+		req.Number, req.Authcode, "email",
 	); err != nil {
-		c.JSON(400, utils.Resp("联系方式验证失败", err, nil))
+		c.JSON(400, utils.Resp("邮箱验证失败", err, nil))
 		return
 	}
 
 	if err := DB.Delete(&user).Error; err != nil {
-		c.JSON(500, utils.Resp("注销删除失败", err, nil))
+		c.JSON(500, utils.Resp("注销失败", err, nil))
 		return
 	}
 

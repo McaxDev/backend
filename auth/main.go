@@ -4,26 +4,23 @@ import (
 	"log"
 	"net"
 
-	auth "github.com/McaxDev/backend/auth/rpc"
+	"github.com/McaxDev/backend/mids"
 	"github.com/McaxDev/backend/utils"
+	"github.com/McaxDev/backend/utils/auth"
+	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 )
 
 func main() {
 
+	if err := LoadConfig(); err != nil {
+		log.Fatalf("读取配置失败：%v\n", err)
+	}
+
 	Init()
 
-	LoadConfig()
-
-	go utils.ScheduleTask(600, func() {
-		CleanMsgSent(
-			&EmailSent,
-			&PhoneSent,
-			&QQSent,
-			&QQMailSent,
-		)
-	})
+	captcha.SetCustomStore(NewStore(Redis))
 
 	lis, err := net.Listen("tcp", ":"+Config.GRPCPort)
 	if err != nil {
@@ -40,23 +37,23 @@ func main() {
 		}
 	}()
 
+	ajc := mids.AuthJwtConfig{
+		JWTKey:    Config.JWTKey,
+		DB:        DB,
+		OnlyAdmin: false,
+	}
+
 	r := gin.Default()
 
 	r.GET("/captcha", SendCaptcha)
 	r.GET("/email/:number", AuthEmail)
-	r.GET("/phone/:number", SendPhone)
+	r.GET("/phone/:number", mids.AuthJwt(ajc, SendPhone))
 	r.GET("/qq/:number", SendQQCode)
 	r.GET("/qqmail/:number", SendQQMailCode)
 
-	if Config.SSL.Enable {
-		err = r.RunTLS(
-			":"+Config.HTTPPort, Config.SSL.Cert, Config.SSL.Key,
-		)
-	} else {
-		err = r.Run(":" + Config.HTTPPort)
-	}
-
-	if err != nil {
+	if err := utils.RunGin(
+		r, Config.HTTPPort, Config.SSL,
+	); err != nil {
 		log.Fatalln("failed to run http server: " + err.Error())
 	}
 }

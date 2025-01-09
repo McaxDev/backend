@@ -1,32 +1,20 @@
 package main
 
 import (
-	account "github.com/McaxDev/backend/account/rpc"
 	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/russross/blackfriday/v2"
 )
 
-func Edit[T any](user *account.User, c *gin.Context, req T) {
+func Edit(user *dbs.User, c *gin.Context, req dbs.Wiki) {
 
-}
+	req.HTML = string(blackfriday.Run([]byte(req.Markdown)))
 
-func HandleEdit[T any](c *gin.Context) error {
-
-	var req dbs.Category
-	if err := utils.GetBodyByCtx(c, &req); err != nil {
-		return err
+	if err := DB.Save(&req).Error; err != nil {
+		c.JSON(500, utils.Resp("修改失败", err, nil))
+		return
 	}
 
-	if err := DB.Where(
-		"path = ?", req.Path,
-	).Or(
-		"title = ?", req.Title,
-	).Or(
-		"order = ?", req.Order,
-	).Find(new(dbs.Category)).Error; err == nil {
-		return err
-	}
-
-	return DB.Save(&req).Error
+	c.JSON(200, utils.Resp("修改成功", nil, nil))
 }

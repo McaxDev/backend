@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
 	"errors"
 
-	"github.com/McaxDev/backend/auth/rpc"
 	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
@@ -36,14 +34,11 @@ func Login(c *gin.Context, req struct {
 			return
 		}
 
-		_, err := AuthClient.Auth(
-			context.Background(), &rpc.Authcode{
-				Codetype: accountType,
-				Number:   req.Account,
-				Authcode: req.Authcode,
-			},
-		)
-		if err != nil {
+		if err := Author.Auth(
+			req.Account,
+			req.Authcode,
+			accountType,
+		); err != nil {
 			c.JSON(400, utils.Resp("验证码验证失败", err, nil))
 			return
 		}

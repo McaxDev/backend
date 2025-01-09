@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetUsername(user *dbs.User, c *gin.Context, name string) {
+func SetUsername(c *gin.Context, user *dbs.User, name string) {
 
 	if err := c.BindJSON(&name); err != nil {
 		c.JSON(400, utils.Resp("用户请求有误", err, nil))
@@ -21,9 +21,11 @@ func SetUsername(user *dbs.User, c *gin.Context, name string) {
 		return
 	}
 
-	if err := user.ExecWithCoins(100, false, func(tx *gorm.DB) error {
-		return tx.Model(&user).Update("name", name).Error
-	}); err != nil {
+	if err := user.ExecWithCoins(DB, 100, false,
+		func(tx *gorm.DB) error {
+			return tx.Model(&user).Update("name", name).Error
+		},
+	); err != nil {
 		c.JSON(500, utils.Resp("用户名更新失败", err, nil))
 		return
 	}

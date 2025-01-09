@@ -1,6 +1,6 @@
 FROM golang:latest AS builder
 WORKDIR /app
-COPY .. .
+COPY . .
 RUN go env -w GOPROXY=https://goproxy.cn,direct
 WORKDIR /app/auth
 RUN go mod download

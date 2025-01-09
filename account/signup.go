@@ -1,9 +1,6 @@
 package main
 
 import (
-	"context"
-
-	"github.com/McaxDev/backend/auth/rpc"
 	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
@@ -30,13 +27,8 @@ func Signup(c *gin.Context, req struct {
 		return
 	}
 
-	if _, err := AuthClient.Auth(
-		context.Background(),
-		&rpc.Authcode{
-			Codetype: "email",
-			Number:   req.Email,
-			Authcode: req.EmailCode,
-		},
+	if err := Author.Auth(
+		req.Email, req.EmailCode, "email",
 	); err != nil {
 		c.JSON(400, utils.Resp("邮箱验证失败", err, nil))
 		return

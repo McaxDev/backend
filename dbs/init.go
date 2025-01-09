@@ -8,24 +8,36 @@ import (
 	"gorm.io/gorm"
 )
 
-var (
-	DB *gorm.DB
-)
+var Instances = []any{
+	new(LimiterRecord),
+	new(Question),
+	new(BlackList),
+	new(Guild),
+	new(Wiki),
 
-func Init(config DBConfig, migrates []any) error {
+	new(User),
+	new(Property),
+	new(Album),
+	new(Issue),
+	new(Image),
+	new(Vote),
+}
 
+func InitDB(config DBConfig) (*gorm.DB, error) {
+
+	var db *gorm.DB
 	var err error
 
-	if DB, err = gorm.Open(mysql.Open(fmt.Sprintf(
+	if db, err = gorm.Open(mysql.Open(fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		config.User, config.Password, config.Host, config.Port, config.Name,
 	))); err != nil {
-		return err
+		return nil, err
 	}
 
-	DB.AutoMigrate(migrates...)
+	db.AutoMigrate(Instances...)
 
-	return nil
+	return db, nil
 }
 
 type DBConfig struct {

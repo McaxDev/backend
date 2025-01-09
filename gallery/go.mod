@@ -4,13 +4,15 @@ replace (
 	github.com/McaxDev/backend/dbs => ../dbs
 	github.com/McaxDev/backend/mids => ../mids
 	github.com/McaxDev/backend/utils => ../utils
+	github.com/McaxDev/backend/utils/auth => ../utils/auth
 )
 
 go 1.23.3
 
 require (
 	github.com/McaxDev/backend/dbs v0.0.0-00010101000000-000000000000
-	github.com/McaxDev/backend/utils v0.0.0-00010101000000-000000000000
+	github.com/McaxDev/backend/mids v0.0.0-00010101000000-000000000000
+	github.com/McaxDev/backend/utils v0.0.0-20250107184523-ee8e1489704e
 	github.com/gin-gonic/gin v1.10.0
 	gorm.io/gorm v1.25.12
 )

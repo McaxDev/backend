@@ -1,3 +1,6 @@
+cp Dockerfile .. &&
+cd .. &&
 docker build -t mcaxdev/account . &&
-docker-compose -f /srv/mcaxdev/account-docker-compose.yml up -d &&
-docker logs -f account
+rm Dockerfile &&
+docker-compose -f /srv/axo/account/docker-compose.yml up -d &&
+docker logs -f axo-account

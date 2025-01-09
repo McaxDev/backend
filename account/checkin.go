@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Checkin(user *dbs.User, c *gin.Context, req struct{}) {
+func Checkin(c *gin.Context, user *dbs.User, req struct{}) {
 
 	iterator := time.Now().Day()
 
@@ -28,7 +28,7 @@ func Checkin(user *dbs.User, c *gin.Context, req struct{}) {
 	c.JSON(200, utils.Resp("签到成功", nil, nil))
 }
 
-func GetCheckin(user *dbs.User, c *gin.Context, req struct{}) {
+func GetCheckin(c *gin.Context, user *dbs.User, req struct{}) {
 
 	type Data struct {
 		Date   int

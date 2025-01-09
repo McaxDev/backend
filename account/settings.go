@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetSettings(user *dbs.User, c *gin.Context, req struct{}) {
+func GetSettings(c *gin.Context, user *dbs.User, req struct{}) {
 
 	type SettingsStruct struct {
 		Name    string
@@ -26,7 +26,7 @@ func GetSettings(user *dbs.User, c *gin.Context, req struct{}) {
 	c.JSON(200, settings)
 }
 
-func SetSettings(user *dbs.User, c *gin.Context, req struct {
+func SetSettings(c *gin.Context, user *dbs.User, req struct {
 	Name  string
 	Value bool
 }) {

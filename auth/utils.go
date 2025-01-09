@@ -2,31 +2,12 @@ package main
 
 import (
 	"bytes"
-	"fmt"
-	"html/template"
 	"net/smtp"
+	"text/template"
 	"time"
 
 	"github.com/McaxDev/backend/utils"
 )
-
-func AuthCode(number, authcode string, data MsgSent) error {
-
-	msgSent, exists := data.data[number]
-	if !exists {
-		return fmt.Errorf("请先申请验证码：%s\n", number)
-	}
-
-	if expiry := msgSent.Expiry; time.Now().After(expiry) {
-		return fmt.Errorf("验证码已过期%v\n", expiry)
-	}
-
-	if authcode != msgSent.Authcode {
-		return fmt.Errorf("验证码不正确：%s\n", authcode)
-	}
-
-	return nil
-}
 
 func SendEmail(email, title string, content []byte) error {
 
