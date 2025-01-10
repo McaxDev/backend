@@ -1,9 +1,7 @@
 package dbs
 
-import "gorm.io/gorm"
-
 type Comment struct {
-	gorm.Model
+	Model
 	Source    string    `json:"source" gorm:"type:TEXT;not null;comment:源内容"`
 	Content   string    `json:"content" gorm:"type:TEXT;not null;comment:内容"`
 	Attitude  int       `json:"attitude" gorm:"type:TINYINT;not null;comment:态度"`

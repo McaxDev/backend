@@ -7,11 +7,10 @@ import (
 )
 
 type User struct {
-	gorm.Model
-	Name     string `json:"name" gorm:"type:VARCHAR(255);not null;unique;comment:用户名"`
-	Password string `json:"-" gorm:"type:VARCHAR(255);not null;comment:密码"`
-	Avatar   string `json:"avatar" gorm:"type:VARCHAR(255);comment:头像"`
-
+	Model
+	Name        string     `json:"name" gorm:"type:VARCHAR(255);not null;unique;comment:用户名"`
+	Password    string     `json:"-" gorm:"type:VARCHAR(255);not null;comment:密码"`
+	Avatar      string     `json:"avatar" gorm:"type:VARCHAR(255);comment:头像"`
 	Profile     string     `json:"profile" gorm:"type:TEXT;comment:个人简介"`
 	Admin       bool       `json:"admin" gorm:"not null;comment:管理员"`
 	TempCoin    uint       `json:"tempCoin" gorm:"not null;comment:签到币"`
@@ -25,10 +24,10 @@ type User struct {
 	JavaName    string     `json:"javaName" gorm:"type:VARCHAR(255);unique;comment:Java版用户名"`
 	GuildID     *uint      `json:"guildId" gorm:"index;comment:公会ID"`
 	GuildRole   uint       `json:"guildRole" gorm:"not null;comment:公会角色"`
-	Guild       Guild      `gorm:"constraint:OnDelete:SET NULL"`
-	Props       []Property `gorm:"constraint:OnDelete:CASCADE"`
-	Comments    []Comment  `gorm:"constraint:OnDelete:SET NULL"`
-	Albums      []Album    `gorm:"constraint:OnDelete:SET NULL;"`
+	Guild       *Guild     `json:"guild" gorm:"constraint:OnDelete:SET NULL"`
+	Props       []Property `json:"props" gorm:"constraint:OnDelete:CASCADE"`
+	Comments    []Comment  `json:"comments" gorm:"constraint:OnDelete:SET NULL"`
+	Albums      []Album    `json:"albums" gorm:"constraint:OnDelete:SET NULL;"`
 }
 
 func (user *User) ExecWithCoins(

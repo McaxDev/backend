@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func AddImage(c *gin.Context, user *dbs.User, _ struct{}) {
+func AddImage(c *gin.Context, user *dbs.User) {
 
 	albumIDInt, err := strconv.Atoi(c.PostForm("album"))
 	if err != nil {

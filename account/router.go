@@ -20,11 +20,11 @@ func GetRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(mids.SetJSONBodyToCtx)
 
-	r.GET("/checkin", mids.AuthJwt(ajc, Checkin))
+	r.GET("/checkin", mids.OnlyAuthJwt(ajc, Checkin))
 	r.GET("/get/blacklist", GetBlackList)
-	r.GET("/get/checkin", mids.AuthJwt(ajc, GetCheckin))
-	r.GET("/get/userinfo", mids.AuthJwt(ajc, GetUserInfo, "Album", "Comment", "Prop"))
-	r.GET("/get/settings", mids.AuthJwt(ajc, GetSettings))
+	r.GET("/get/checkin", mids.OnlyAuthJwt(ajc, GetCheckin))
+	r.GET("/get/userinfo", mids.OnlyAuthJwt(ajc, GetUserInfo, "Albums", "Comments", "Props"))
+	r.GET("/get/settings", mids.OnlyAuthJwt(ajc, GetSettings))
 
 	r.POST("/login", mids.BindReq(Login))
 	r.POST("/signup", authCaptcha, authEmail, mids.BindReq(Signup))

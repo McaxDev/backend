@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SendPhone(c *gin.Context, user *dbs.User, req struct{}) {
+func SendPhone(c *gin.Context, user *dbs.User) {
 
 	telephone := c.Param("number")
 	authcode := utils.RandomCode(6, false)

@@ -7,10 +7,9 @@ import (
 )
 
 func Signup(c *gin.Context, req struct {
-	Username  string
-	Password  string
-	Email     string
-	EmailCode string
+	Username string
+	Password string
+	EmailID  string
 }) {
 
 	if err := DB.First(
@@ -21,7 +20,7 @@ func Signup(c *gin.Context, req struct {
 	}
 
 	if err := DB.First(
-		new(dbs.User), "email = ?", req.Email,
+		new(dbs.User), "email = ?", req.EmailID,
 	).Error; err == nil {
 		c.JSON(400, utils.Resp("此邮箱已经注册过了", nil, nil))
 		return
@@ -30,7 +29,7 @@ func Signup(c *gin.Context, req struct {
 	user := dbs.User{
 		Name:     req.Username,
 		Password: req.Password,
-		Email:    req.Email,
+		Email:    req.EmailID,
 		Admin:    false,
 	}
 

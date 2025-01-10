@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Upgrade(user *dbs.User, c *gin.Context, req struct{}) {
+func Upgrade(user *dbs.User, c *gin.Context) {
 
 	var cost uint
 	switch user.Guild.Level {
@@ -24,7 +24,7 @@ func Upgrade(user *dbs.User, c *gin.Context, req struct{}) {
 	}
 
 	if err := user.ExecWithCoins(
-		cost, false, func(tx *gorm.DB) error {
+		DB, cost, false, func(tx *gorm.DB) error {
 			return tx.Model(&user.Guild).Update(
 				"level = ?", user.Guild.Level+1,
 			).Error

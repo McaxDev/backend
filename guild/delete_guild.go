@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func DeleteGuild(user *dbs.User, c *gin.Context, req struct{}) {
+func DeleteGuild(user *dbs.User, c *gin.Context) {
 
 	if user.GuildRole == 3 {
 
@@ -16,7 +16,7 @@ func DeleteGuild(user *dbs.User, c *gin.Context, req struct{}) {
 			if err := tx.Where(
 				"guild_id = ?", user.GuildID,
 			).Updates(&dbs.User{
-				GuildID:   0,
+				GuildID:   nil,
 				GuildRole: 0,
 			}).Error; err != nil {
 				return err
@@ -30,7 +30,7 @@ func DeleteGuild(user *dbs.User, c *gin.Context, req struct{}) {
 
 	} else {
 
-		user.GuildID = 0
+		user.GuildID = nil
 		user.GuildRole = 0
 		if err := DB.Updates(user).Error; err != nil {
 			c.JSON(500, utils.Resp("公会退出失败", err, nil))

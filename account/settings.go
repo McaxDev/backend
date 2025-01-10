@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetSettings(c *gin.Context, user *dbs.User, req struct{}) {
+func GetSettings(c *gin.Context, user *dbs.User) {
 
 	type SettingsStruct struct {
 		Name    string

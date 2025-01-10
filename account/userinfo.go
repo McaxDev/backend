@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetUserInfo(c *gin.Context, user *dbs.User, req struct{}) {
+func GetUserInfo(c *gin.Context, user *dbs.User) {
 
 	c.JSON(200, utils.Resp("获取成功", nil, user))
 }

@@ -47,7 +47,7 @@ func main() {
 
 	r.GET("/captcha", SendCaptcha)
 	r.GET("/email/:number", AuthEmail)
-	r.GET("/phone/:number", mids.AuthJwt(ajc, SendPhone))
+	r.GET("/phone/:number", mids.OnlyAuthJwt(ajc, SendPhone))
 	r.GET("/qq/:number", SendQQCode)
 	r.GET("/qqmail/:number", SendQQMailCode)
 

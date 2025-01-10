@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetGuilds(c *gin.Context, req struct{}) {
+func GetGuilds(c *gin.Context) {
 
 	var data []dbs.Guild
 	if err := DB.Find(&data).Error; err != nil {

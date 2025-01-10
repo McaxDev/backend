@@ -1,6 +1,8 @@
 package mids
 
 import (
+	"errors"
+
 	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
@@ -21,52 +23,9 @@ func AuthJwt[T any](
 ) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		rawToken := c.GetHeader("Authorization")
-		if len(rawToken) < 8 {
-			c.AbortWithStatusJSON(401, utils.Resp("token无效", nil, nil))
-			return
-		}
-
-		token := rawToken[7:]
-
-		jwtToken, err := jwt.Parse(
-			token,
-			func(t *jwt.Token) (any, error) {
-				return []byte(ajc.JWTKey), nil
-			},
-		)
+		user, err := HandleAuthJwt(c, ajc, preloads...)
 		if err != nil {
-			c.AbortWithStatusJSON(401, utils.Resp("token签名密钥不正确", err, nil))
-			return
-		}
-
-		claims, ok := jwtToken.Claims.(jwt.MapClaims)
-		if !ok || !jwtToken.Valid {
-			c.AbortWithStatusJSON(401, utils.Resp("token格式不正确", nil, nil))
-			return
-		}
-
-		userId := uint(claims["userId"].(float64))
-
-		newToken, err := utils.GetJwt(userId, ajc.JWTKey)
-		if err != nil {
-			c.AbortWithStatusJSON(500, utils.Resp("生成新token失败", err, nil))
-			return
-		}
-		c.Header("Authorization", newToken)
-
-		user := dbs.User{Model: gorm.Model{ID: userId}}
-
-		query := ajc.DB
-		for _, value := range preloads {
-			query.Preload(value)
-		}
-
-		if err := query.First(&user).Error; err == gorm.ErrRecordNotFound {
-			c.AbortWithStatusJSON(401, utils.Resp("用户不存在", nil, nil))
-			return
-		} else if err != nil {
-			c.AbortWithStatusJSON(401, utils.Resp("查询用户失败", err, nil))
+			c.AbortWithStatusJSON(401, utils.Resp("凭证验证失败", err, nil))
 			return
 		}
 
@@ -81,6 +40,79 @@ func AuthJwt[T any](
 			return
 		}
 
-		logicFunc(c, &user, params)
+		logicFunc(c, user, params)
 	}
+}
+
+func OnlyAuthJwt(
+	ajc AuthJwtConfig,
+	logicFunc func(c *gin.Context, user *dbs.User),
+	preloads ...string,
+) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		user, err := HandleAuthJwt(c, ajc, preloads...)
+		if err != nil {
+			c.AbortWithStatusJSON(401, utils.Resp("凭证验证失败", err, nil))
+			return
+		}
+
+		if ajc.OnlyAdmin && !user.Admin {
+			c.AbortWithStatusJSON(403, utils.Resp("你不是管理员", nil, nil))
+			return
+		}
+
+		logicFunc(c, user)
+	}
+}
+
+func HandleAuthJwt(
+	c *gin.Context, ajc AuthJwtConfig, preloads ...string,
+) (*dbs.User, error) {
+	rawToken := c.GetHeader("Authorization")
+	if len(rawToken) < 8 {
+		c.AbortWithStatusJSON(401, utils.Resp("token无效", nil, nil))
+		return nil, errors.New("token无效")
+	}
+
+	token := rawToken[7:]
+
+	jwtToken, err := jwt.Parse(
+		token,
+		func(t *jwt.Token) (any, error) {
+			return []byte(ajc.JWTKey), nil
+		},
+	)
+	if err != nil {
+		return nil, errors.New("token签名密钥不正确")
+	}
+
+	claims, ok := jwtToken.Claims.(jwt.MapClaims)
+	if !ok || !jwtToken.Valid {
+		return nil, errors.New("token格式不正确")
+	}
+
+	userId := uint(claims["userId"].(float64))
+
+	newToken, err := utils.GetJwt(userId, ajc.JWTKey)
+	if err != nil {
+		return nil, errors.New("生成新token失败")
+	}
+	c.Header("Authorization", newToken)
+
+	user := dbs.User{}
+	user.ID = userId
+
+	query := ajc.DB
+	for _, value := range preloads {
+		query.Preload(value)
+	}
+
+	if err := query.First(&user).Error; err == gorm.ErrRecordNotFound {
+		return nil, errors.New("用户不存在")
+	} else if err != nil {
+		return nil, errors.New("查询用户失败")
+	}
+
+	return &user, nil
 }
