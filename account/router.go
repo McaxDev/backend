@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/McaxDev/backend/mids"
-	"github.com/McaxDev/backend/utils/auth"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,7 +13,9 @@ func GetRouter() *gin.Engine {
 		OnlyAdmin: false,
 	}
 
-	authCaptcha := auth.NewAuthor(Redis).NewMid("captcha")
+	authCaptcha := Author.NewMid("captcha")
+	authEmail := Author.NewMid("email")
+	authPhone := Author.NewMid("phone")
 
 	r := gin.Default()
 	r.Use(mids.SetJSONBodyToCtx)
@@ -22,13 +23,14 @@ func GetRouter() *gin.Engine {
 	r.GET("/checkin", mids.AuthJwt(ajc, Checkin))
 	r.GET("/get/blacklist", GetBlackList)
 	r.GET("/get/checkin", mids.AuthJwt(ajc, GetCheckin))
-	r.GET("/get/userinfo", mids.AuthJwt(ajc, GetUserInfo))
+	r.GET("/get/userinfo", mids.AuthJwt(ajc, GetUserInfo, "Album", "Comment", "Prop"))
 	r.GET("/get/settings", mids.AuthJwt(ajc, GetSettings))
 
-	r.POST("/login", authCaptcha, mids.BindReq(Login))
-	r.POST("/signup", authCaptcha, mids.BindReq(Signup))
-	r.POST("/signout", authCaptcha, mids.AuthJwt(ajc, Signout))
-	r.POST("/bindauth", mids.AuthJwt(ajc, Bind))
+	r.POST("/login", mids.BindReq(Login))
+	r.POST("/signup", authCaptcha, authEmail, mids.BindReq(Signup))
+	r.POST("/signout", authCaptcha, authEmail, mids.AuthJwt(ajc, Signout))
+	r.POST("/bind/phone", authPhone, mids.AuthJwt(ajc, BindPhone))
+	r.POST("/bind/email", authEmail, mids.AuthJwt(ajc, BindEmail))
 	r.POST("/set/settings", mids.AuthJwt(ajc, SetSettings))
 	r.POST("/set/username", mids.AuthJwt(ajc, SetUsername))
 	r.POST("/set/password", mids.BindReq(SetPassword))

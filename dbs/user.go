@@ -8,9 +8,10 @@ import (
 
 type User struct {
 	gorm.Model
-	Name        string     `json:"name" gorm:"type:VARCHAR(255);not null;unique;comment:用户名"`
-	Password    string     `json:"-" gorm:"type:VARCHAR(255);not null;comment:密码"`
-	Avatar      string     `json:"avatar" gorm:"type:VARCHAR(255);comment:头像"`
+	Name     string `json:"name" gorm:"type:VARCHAR(255);not null;unique;comment:用户名"`
+	Password string `json:"-" gorm:"type:VARCHAR(255);not null;comment:密码"`
+	Avatar   string `json:"avatar" gorm:"type:VARCHAR(255);comment:头像"`
+
 	Profile     string     `json:"profile" gorm:"type:TEXT;comment:个人简介"`
 	Admin       bool       `json:"admin" gorm:"not null;comment:管理员"`
 	TempCoin    uint       `json:"tempCoin" gorm:"not null;comment:签到币"`
@@ -22,11 +23,12 @@ type User struct {
 	QQ          string     `json:"qq" gorm:"type:VARCHAR(255);unique;comment:QQ号"`
 	BedrockName string     `json:"bedrockName" gorm:"type:VARCHAR(255);unique;comment:基岩版用户名"`
 	JavaName    string     `json:"javaName" gorm:"type:VARCHAR(255);unique;comment:Java版用户名"`
-	Issues      []Issue    `gorm:"constraint:OnDelete:SET NULL"`
-	GuildID     uint       `json:"guildId" gorm:"omitempty;comment:公会ID"`
+	GuildID     *uint      `json:"guildId" gorm:"index;comment:公会ID"`
 	GuildRole   uint       `json:"guildRole" gorm:"not null;comment:公会角色"`
 	Guild       Guild      `gorm:"constraint:OnDelete:SET NULL"`
 	Props       []Property `gorm:"constraint:OnDelete:CASCADE"`
+	Comments    []Comment  `gorm:"constraint:OnDelete:SET NULL"`
+	Albums      []Album    `gorm:"constraint:OnDelete:SET NULL;"`
 }
 
 func (user *User) ExecWithCoins(

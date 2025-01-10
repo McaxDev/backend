@@ -12,3 +12,9 @@ var Config struct {
 	SSL       utils.SSLConfig
 	DB        dbs.DBConfig
 }
+
+func LoadConfig() {
+	utils.LoadConfig(&Config)
+	utils.LoadSSLConfig(&Config.SSL)
+	dbs.LoadDBConfig(&Config.DB)
+}

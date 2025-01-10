@@ -75,7 +75,7 @@ func Login(c *gin.Context, req struct {
 		return
 	}
 
-	token, err := utils.GetJwt(user.ID)
+	token, err := utils.GetJwt(user.ID, Config.JWTKey)
 	if err != nil {
 		c.JSON(500, utils.Resp("用户凭证生成失败", err, nil))
 		return

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 )
 
@@ -22,13 +23,15 @@ var Config struct {
 		Password string `env:"SMTP_PASSWORD"`
 	}
 	SSL   utils.SSLConfig
+	DB    dbs.DBConfig
 	Redis utils.RedisConfig
 }
 
-func LoadConfig() error {
+func LoadConfig() {
 	utils.LoadConfig(&Config)
 	utils.LoadConfig(&Config.SMS)
 	utils.LoadConfig(&Config.SMTP)
 	utils.LoadSSLConfig(&Config.SSL)
-	return utils.LoadRedisConfig(&Config.Redis)
+	dbs.LoadDBConfig(&Config.DB)
+	utils.LoadRedisConfig(&Config.Redis)
 }

@@ -1,9 +1,4 @@
-http POST https://api.axtl.cn:520$1 \
-Authorization:'Bearer YOUR_TOKEN' \
+http POST https://api.axtl.cn:520/account/bind/email \
+Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY2MTgyODQsInVzZXJJZCI6Mn0.zch7qTtnCKXOGhWmqlDpVJ43rV2RaHlO5vC-U5QCfDQ' \
 Content-Type:application/json \
-CaptchaID=AzyvpLWAOD4Dbz8lrNLO \
-CaptchaValue=846350 \
-Username=Bestcb233 \
-Password=Cb8b318bx \
-Email=2892709432@qq.com \
-EmailCode=7VFwYk
+emailID=2892709432@qq.com emailCode=yw25QE

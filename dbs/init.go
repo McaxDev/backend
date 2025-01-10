@@ -16,11 +16,12 @@ var Instances = []any{
 	new(Wiki),
 
 	new(User),
+	new(Post),
 	new(Property),
 	new(Album),
-	new(Issue),
 	new(Image),
-	new(Vote),
+
+	new(Comment),
 }
 
 func InitDB(config DBConfig) (*gorm.DB, error) {

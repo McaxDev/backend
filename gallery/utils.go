@@ -8,15 +8,15 @@ func CheckImagePerm(user *dbs.User, image *dbs.Image) bool {
 		return true
 	}
 
-	if image.UserID == user.ID {
+	if *image.UserID == user.ID {
 		return true
 	}
 
-	if image.Album.UserID == user.ID {
+	if *image.Album.UserID == user.ID {
 		return true
 	}
 
-	if image.Album.GuildID != 0 {
+	if *image.Album.GuildID != 0 {
 		if user.GuildID == image.Album.GuildID && user.GuildRole > 2 {
 			return true
 		}
@@ -31,8 +31,8 @@ func CheckUploadImage(user *dbs.User, album *dbs.Album) bool {
 		return true
 	}
 
-	if album.GuildID == 0 {
-		if album.UserID == user.ID || album.OnlyAdmin == false {
+	if *album.GuildID == 0 {
+		if *album.UserID == user.ID || album.OnlyAdmin == false {
 			return true
 		}
 	} else {
@@ -52,16 +52,16 @@ func CheckEditAlbum(user *dbs.User, album *dbs.Album) bool {
 		return true
 	}
 
-	if album.GuildID == 0 {
-		if album.UserID == user.ID {
+	if *album.GuildID == 0 {
+		if *album.UserID == user.ID {
 			return true
 		}
 	} else {
-		if album.GuildID != 0 {
+		if *album.GuildID != 0 {
 			if user.GuildID == album.GuildID && user.GuildRole > 2 {
 				return true
 			}
-			if album.UserID == user.ID {
+			if *album.UserID == user.ID {
 				return true
 			}
 		}

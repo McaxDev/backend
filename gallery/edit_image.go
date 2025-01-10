@@ -10,11 +10,10 @@ func EditImage(c *gin.Context, user *dbs.User, req struct {
 	ID          uint
 	Title       string
 	Description string
-	Order       int
 }) {
 
 	var image dbs.Image
-	if err := DB.Where("id = ?", req.ID).First(
+	if err := DB.Preload("Album").Where("id = ?", req.ID).First(
 		&image,
 	).Error; err != nil {
 		c.JSON(500, utils.Resp("查询图片失败", err, nil))

@@ -40,20 +40,22 @@ func AuthJwt[T any](
 			return
 		}
 
-		claims, ok := jwtToken.Claims.(*utils.JWTClaims)
+		claims, ok := jwtToken.Claims.(jwt.MapClaims)
 		if !ok || !jwtToken.Valid {
 			c.AbortWithStatusJSON(401, utils.Resp("token格式不正确", nil, nil))
 			return
 		}
 
-		newToken, err := utils.GetJwt(claims.UserID)
+		userId := uint(claims["userId"].(float64))
+
+		newToken, err := utils.GetJwt(userId, ajc.JWTKey)
 		if err != nil {
 			c.AbortWithStatusJSON(500, utils.Resp("生成新token失败", err, nil))
 			return
 		}
 		c.Header("Authorization", newToken)
 
-		user := dbs.User{Model: gorm.Model{ID: claims.UserID}}
+		user := dbs.User{Model: gorm.Model{ID: userId}}
 
 		query := ajc.DB
 		for _, value := range preloads {

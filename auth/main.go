@@ -14,11 +14,11 @@ import (
 
 func main() {
 
-	if err := LoadConfig(); err != nil {
-		log.Fatalf("读取配置失败：%v\n", err)
-	}
+	LoadConfig()
 
-	Init()
+	if err := Init(); err != nil {
+		log.Fatalln(err.Error())
+	}
 
 	captcha.SetCustomStore(NewStore(Redis))
 

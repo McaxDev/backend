@@ -27,13 +27,6 @@ func Signup(c *gin.Context, req struct {
 		return
 	}
 
-	if err := Author.Auth(
-		req.Email, req.EmailCode, "email",
-	); err != nil {
-		c.JSON(400, utils.Resp("邮箱验证失败", err, nil))
-		return
-	}
-
 	user := dbs.User{
 		Name:     req.Username,
 		Password: req.Password,
@@ -46,7 +39,7 @@ func Signup(c *gin.Context, req struct {
 		return
 	}
 
-	token, err := utils.GetJwt(user.ID)
+	token, err := utils.GetJwt(user.ID, Config.JWTKey)
 	if err != nil {
 		c.JSON(500, utils.Resp("JWT生成失败", err, nil))
 		return

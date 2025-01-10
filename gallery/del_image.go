@@ -14,7 +14,7 @@ import (
 func DelImage(c *gin.Context, user *dbs.User, ids []uint) {
 
 	var images []dbs.Image
-	if err := DB.Where("id IN ?", ids).Find(
+	if err := DB.Preload("Album").Where("id IN ?", ids).Find(
 		&images,
 	).Error; err != nil {
 		c.JSON(500, utils.Resp("查找图片失败", err, nil))

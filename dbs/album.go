@@ -5,12 +5,11 @@ import "gorm.io/gorm"
 type Album struct {
 	gorm.Model
 	Cover     string  `json:"cover" gorm:"type:VARCHAR(255);comment:封面文件名"`
-	Order     int     `json:"order" gorm:"comment:排序"`
 	Title     string  `json:"name" gorm:"type:VARCHAR(255);not null;unique;comment:标题"`
 	OnlyAdmin bool    `json:"only_admin" gorm:"not null;comment:仅允许管理员"`
-	GuildID   uint    `json:"guild_id" gorm:"omitempty;comment:公会ID"`
+	GuildID   *uint   `json:"guild_id" gorm:"index;comment:公会ID"`
 	Guild     Guild   `gorm:"constraint:OnDelete:SET NULL;"`
-	UserID    uint    `json:"userId" gorm:"comment:创建者"`
+	UserID    *uint   `json:"userId" gorm:"index;comment:创建者"`
 	User      User    `gorm:"constraint:OnDelete:SET NULL;"`
 	Images    []Image `gorm:"constraint:OnDelete:CASCADE"`
 }

@@ -52,23 +52,35 @@
     "Authcode": "收到的验证码"
 }
 ```
-#### 登录或注册 POST
+#### 登录 POST
 * 路径：`/account/login`
 * 请求体：
 ```json
 {
     "Account": "邮箱/手机号/用户名",
-    "Authcode": "邮箱或手机号的验证码",
-    "Password": "用户密码",
-    "CaptchaID": "人机验证ID",
-    "CaptchaValue": "人机验证码"
+    "Password": "用户密码"
 }
 ```
-* Authcode和Password提供任意一个即可，据此来判断使用密码或者验证码登录。
-* 使用验证码登录时，如果用户不存在，则自动注册。
 * 响应体data部分：
 ```json
-"Bearer 432f5.342f52.234vf523"
+"Bearer 用户凭证"
+```
+#### 注册 POST
+* 路径：`/account/login`
+* 请求体：
+```json
+{
+    "captchaId": "人机验证ID",
+    "captchaCode": "人机验证码",
+    "emailId": "邮箱账号",
+    "emailCode": "邮箱验证码",
+    "Username": "用户名",
+    "Password": "用户密码"
+}
+```
+* 响应体data部分：
+```json
+"Bearer 用户凭证"
 ```
 #### 获取用户信息 GET
 * 路径：`/account/get/userinfo`

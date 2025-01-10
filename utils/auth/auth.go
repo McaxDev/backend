@@ -48,10 +48,7 @@ func (author Author) Auth(number, authcode, kind string) error {
 func (author Author) NewMid(kind string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		var req struct {
-			Number   string
-			Authcode string
-		}
+		var req map[string]any
 		if err := utils.GetBodyByCtx(c, &req); err != nil {
 			c.AbortWithStatusJSON(400,
 				utils.Resp("用户请求有误", err, nil),
@@ -59,10 +56,19 @@ func (author Author) NewMid(kind string) gin.HandlerFunc {
 			return
 		}
 
+		rawNumber := req[kind+"ID"]
+		rawAuthcode := req[kind+"Code"]
+		number, ok1 := rawNumber.(string)
+		authcode, ok2 := rawAuthcode.(string)
+		if !ok1 || !ok2 {
+			c.AbortWithStatusJSON(400,
+				utils.Resp("验证码格式不正确", nil, nil),
+			)
+			return
+		}
+
 		if err := author.Auth(
-			req.Number,
-			req.Authcode,
-			kind,
+			number, authcode, kind,
 		); err != nil {
 			c.AbortWithStatusJSON(400,
 				utils.Resp("验证码不正确", err, nil),

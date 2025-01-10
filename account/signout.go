@@ -9,13 +9,6 @@ import (
 
 func Signout(c *gin.Context, user *dbs.User, req auth.CodeMsg) {
 
-	if err := Author.Auth(
-		req.Number, req.Authcode, "email",
-	); err != nil {
-		c.JSON(400, utils.Resp("邮箱验证失败", err, nil))
-		return
-	}
-
 	if err := DB.Delete(&user).Error; err != nil {
 		c.JSON(500, utils.Resp("注销失败", err, nil))
 		return

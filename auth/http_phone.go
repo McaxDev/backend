@@ -40,5 +40,5 @@ func SendPhone(c *gin.Context, user *dbs.User, req struct{}) {
 		return
 	}
 
-	c.JSON(200, utils.Resp("验证码发送成功", nil, nil))
+	c.JSON(200, utils.Resp("验证码发送成功"+telephone, nil, nil))
 }

@@ -12,7 +12,6 @@ func EditAlbum(c *gin.Context, user *dbs.User, req struct {
 	Title     string
 	OnlyAdmin bool
 	GuildID   uint
-	Order     int
 }) {
 
 	var album dbs.Album

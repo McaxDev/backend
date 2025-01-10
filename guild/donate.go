@@ -9,7 +9,7 @@ import (
 
 func Donate(user *dbs.User, c *gin.Context, amount uint) {
 
-	if err := utils.ExecWithCoins(user, amount, func(tx *gorm.DB) error {
+	if err := user.ExecWithCoins(DB, amount, true, func(tx *gorm.DB) error {
 		return tx.Model(new(dbs.Guild)).Where(
 			"id = ?", user.GuildID,
 		).Update(

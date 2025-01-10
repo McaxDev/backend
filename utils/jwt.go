@@ -6,20 +6,12 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type JWTClaims struct {
-	UserID uint `json:"user_id"`
-	jwt.RegisteredClaims
-}
-
-func GetJwt(userID uint) (string, error) {
+func GetJwt(userID uint, jwtKey string) (string, error) {
 	return jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
-		JWTClaims{
-			UserID: userID,
-			RegisteredClaims: jwt.RegisteredClaims{
-				Issuer:    "Axolotland",
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
-			},
+		jwt.MapClaims{
+			"userId": userID,
+			"exp":    time.Now().Add(time.Hour * 24).Unix(),
 		},
-	).SignedString([]byte(JWTKey))
+	).SignedString([]byte(jwtKey))
 }

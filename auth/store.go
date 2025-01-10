@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -17,9 +18,15 @@ func NewStore(client *redis.Client) RedisStore {
 }
 
 func (s RedisStore) Set(id string, digits []byte) {
+
+	var result string
+	for _, val := range digits {
+		result += strconv.Itoa(int(val))
+	}
+
 	if err := s.client.Set(
 		context.Background(),
-		"auth_captcha_"+id, digits, 10*time.Minute,
+		"auth_captcha_"+id, result, 10*time.Minute,
 	).Err(); err != nil {
 		fmt.Printf("存储Captcha到Redis失败：%v\n", err)      
 	}
@@ -42,5 +49,12 @@ func (s RedisStore) Get(id string, clear bool) (digits []byte) {
 		s.client.Del(context.Background(), id)
 	}
 
-	return []byte(val)
+	var result []byte
+
+	for _, value := range val {
+		num, _ := strconv.Atoi(string(value))
+		result = append(result, byte(num))
+	}
+
+	return result
 }
