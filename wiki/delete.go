@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Delete(user *dbs.User, c *gin.Context, req uint) {
+func Delete(c *gin.Context, user *dbs.User, req uint) {
 
 	if err := DB.Where("id = ?", req).Delete(
 		new(dbs.Wiki),

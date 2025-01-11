@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func EditAlbum(c *gin.Context, user *dbs.User, req struct {
+func SetAlbum(c *gin.Context, user *dbs.User, req struct {
 	ID        uint
 	Cover     string
 	Title     string

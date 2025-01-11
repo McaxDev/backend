@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func EditImage(c *gin.Context, user *dbs.User, req struct {
+func SetImage(c *gin.Context, user *dbs.User, req struct {
 	ID          uint
 	Title       string
 	Description string

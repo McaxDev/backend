@@ -187,12 +187,111 @@
     "emailCode": "114514"
 }
 ```
+#### 获取wiki列表
+* 路径：`/wiki/list`
+* 响应体data部分：
+```json
+[
+        {
+            "category": "atype",
+            "id": 1,
+            "path": "a",
+            "title": "测试A",
+        },
+        {
+            "category": "btype",
+            "id": 2,
+            "path": "b",
+            "title": "测试B",
+        }
+    ]
+```
+#### 获取特定wiki信息
+* 路径：`/wiki/get?id=?`
+* 响应体data部分：
+```json
+{
+        "category": "atype",
+        "content": "测试A",
+        "createdAt": "2025-01-12T04:58:10Z",
+        "html": "测试A",
+        "id": 1,
+        "path": "a",
+        "title": "测试A",
+        "updatedAt": "2025-01-12T04:58:10Z"
+}
+```
+#### 编辑特定wiki信息
+* 路径：`/wiki/edit`
+* 需要管理员权限
+* 请求体（带id为编辑，不带id为新增）：
+* 不需要传入html字段，html字段由后端从content渲染
+```json
+{
+        "id": 1,
+        "category": "atype",
+        "content": "测试A",
+        "path": "a",
+        "title": "测试A",
+}
+```
+#### 删除特定wiki
+* 路径：`/wiki/delete`
+* 需要管理员权限
+* 请求体（数字12代表wiki的id）：
+```json
+12
+```
+#### 查看相册列表 GET
+* 路径：`/get/albums`
+#### 查看相册的图片列表 GET
+* 路径（10是相册ID）：`/get/images?id=10`
+#### 创建相册 POST
+* 路径：`/add/album`
+* 请求头带JWT
+* 请求体：
+```json
+{
+    "path": "相册url路径",
+    "title": "相册标题"
+}
+```
+#### 上传图片 POST
+* 路径：`/add/image`
+* 请求头带JWT
+* 请求体MIME类型为`multipart/form-data`
+* 请求体字段列表：
+  * `album`: 代表相册ID，如`10`
+  * `image`: 图片文件
+  * `title`: 图片标题
+  * `description`: 图片描述
+#### 修改相册信息 POST
+* 对于修改或删除相册，web管理员具有所有相册权限，相册创建者具有他创建的相册的权限，如果相册属于公会，那么公会管理员有该相册的权限
+* 路径：`/set/album`
+* 请求头带JWT
+#### 修改图片信息 POST
+* 路径：`/set/image`
+* 请求头带JWT
+#### 删除相册 DELETE
+* 路径：`/del/album`
+* 请求头带JWT
+* 请求体（里面数字是相册ID）：
+```json
+3
+```
+#### 删除图片 DELETE
+* 路径：`/del/images`
+* 请求头带JWT
+* 请求体（里面数字是图片ID）：
+```json
+[1, 2, 3]
+```
 #### 获取特定玩家的统计信息 GET
 * 路径：`/dash/player/:player_name`
 * 查询字符串参数：`server=服务器ID`
 * 响应体data部分：见`docs/result.json`
 #### 获取特定统计信息的排行榜 GET
-* 路径：`/dash/:stat`，`:stat`包括`mined`,`picked_up`,`crafted`,`broken`,`play_time`,`deaths`,`mob_kills`,`damage_dealt`,`drop`
+* 路径：`/dash/rank/:stat`，`:stat`包括`mined`,`picked_up`,`crafted`,`broken`,`play_time`,`deaths`,`mob_kills`,`damage_dealt`,`drop`
 * 查询字符串参数：`server=paper`，见上文“服务器ID”
 * 响应体data部分：
 ```json
@@ -218,7 +317,7 @@
 ```
 #### 向服务器发送命令 POST
 * 路径：`/game/command`
-* 除了部分命令外，其他命令都需要管理员权限
+* 需要管理员权限
 * 请求体：
 ```json
 {

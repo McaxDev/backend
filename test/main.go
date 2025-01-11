@@ -3,19 +3,34 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
-type Inner struct {
-	Name string `json:"name,omitempty"`
-}
-
-type Outer struct {
-	InnerField Inner `json:"inner_field,omitempty"`
+type TestStruct struct {
+	Name      string    `json:"name"`
+	Timestamp time.Time `json:"timestamp,omitempty"`
 }
 
 func main() {
-	outer := Outer{}
-	// 使用omitempty，InnerField是零值，所以输出时会被忽略
-	data, _ := json.Marshal(outer)
-	fmt.Println(string(data)) // 输出：{}
+	// 创建一个包含零值 time.Time 的结构体实例
+	data := TestStruct{
+		Name: "Test",
+	}
+
+	// 序列化为 JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("JSON Marshal Error:", err)
+		return
+	}
+
+	// 打印序列化后的 JSON 字符串
+	fmt.Println("Serialized JSON:", string(jsonData))
+
+	// 验证 Timestamp 字段是否出现在 JSON 中
+	if string(jsonData) == `{"name":"Test"}` {
+		fmt.Println("Test Passed: Zero value time.Time with omitempty is excluded from JSON.")
+	} else {
+		fmt.Println("Test Failed: Zero value time.Time with omitempty is included in JSON.")
+	}
 }

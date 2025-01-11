@@ -7,7 +7,7 @@ import (
 )
 
 func GetUserinfo(c *gin.Context, req struct {
-	ID uint
+	ID uint `form:"id"`
 }) {
 
 	var user dbs.User

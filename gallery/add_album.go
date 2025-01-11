@@ -8,13 +8,12 @@ import (
 )
 
 func AddAlbum(c *gin.Context, user *dbs.User, req struct {
-	Folder string
-	Title  string
-	UserID uint
+	Path  string
+	Title string
 }) {
 
 	if err := DB.Where(
-		"folder = ? OR title = ?", req.Folder, req.Title,
+		"path = ? OR title = ?", req.Path, req.Title,
 	).First(new(dbs.Album)).Error; err == nil {
 		c.JSON(400, utils.Resp("已存在同名相册", nil, nil))
 		return

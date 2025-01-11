@@ -7,7 +7,7 @@ import (
 	"github.com/russross/blackfriday/v2"
 )
 
-func Edit(user *dbs.User, c *gin.Context, req dbs.Wiki) {
+func Edit(c *gin.Context, user *dbs.User, req dbs.Wiki) {
 
 	req.HTML = string(blackfriday.Run([]byte(req.Markdown)))
 
