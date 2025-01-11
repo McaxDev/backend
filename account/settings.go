@@ -9,35 +9,28 @@ import (
 func GetSettings(c *gin.Context, user *dbs.User) {
 
 	type SettingsStruct struct {
-		Name    string
-		Comment string
-		value   bool
+		Name  string `json:"name"`
+		Value bool   `json:"value"`
 	}
 
 	var settings []SettingsStruct
-	for name, data := range utils.SetMapTable {
+	for index, name := range utils.SettingsSlice {
 		settings = append(settings, SettingsStruct{
-			Name:    name,
-			Comment: data.Comment,
-			value:   utils.GetBitByName(user.Setting, name),
+			Name:  name,
+			Value: utils.GetBitByIndex(user.Setting, uint(index)),
 		})
 	}
 
 	c.JSON(200, settings)
 }
 
-func SetSettings(c *gin.Context, user *dbs.User, req struct {
-	Name  string
+func SetSetting(c *gin.Context, user *dbs.User, req struct {
+	Index uint
 	Value bool
 }) {
 
-	if err := c.BindJSON(&req); err != nil {
-		c.JSON(400, utils.Resp("用户请求不正确", err, nil))
-		return
-	}
-
-	utils.UpdateBitByName(
-		&user.Setting, req.Name, req.Value,
+	utils.UpdateBitByIndex(
+		&user.Setting, req.Index, req.Value,
 	)
 
 	if err := DB.Updates(&user).Error; err != nil {

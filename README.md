@@ -86,8 +86,8 @@
 ```json
 "Bearer 用户凭证"
 ```
-#### 获取用户信息 GET
-* 路径：`/account/get/userinfo`
+#### 获取我的信息 GET
+* 路径：`/account/get/myinfo`
 * 请求头带JWT
 * 响应体data部分：
 ```json
@@ -105,6 +105,9 @@
     "dstName": "nerakolo"
 }
 ```
+#### 获取其他用户的信息 GET
+* 路径（id是用户id）：`/account/get/userinfo?id=1`
+* 响应体同上
 #### 获取用户设置 GET
 * 路径：`/account/get/settings`
 * 请求头带JWT
@@ -112,25 +115,23 @@
 ```json
 [
     {
-        "name": "enableMfa",
-        "comment": "启用MFA验证",
+        "name": "启用MFA验证",
         "value": true
     },
     {
-        "name": "mfaUseEmail",
-        "comment": "开启则用Email作为MFA方式，关闭则为SMS",
+        "name": "公开我的邮箱",
         "value": false
     }
 ]
 ```
 #### 更新用户设置 POST
-* 路径：`/account/set/settings`
+* 路径：`/account/set/setting`
 * 请求头带JWT
-* 请求体：
+* 请求体（index代表该项在"获取"里的位置，从0开始）：
 ```json
 {
-    "Name": "enableMfa",
-    "Value": true
+    "index": 1,
+    "value": true
 }
 ```
 #### 每日签到 GET
@@ -161,7 +162,10 @@
 * 请求头带JWT
 * 请求体：
 ```json
-手机验证码
+{
+    "phoneId": "手机号码",
+    "phoneCode": "短信验证码"
+}
 ```
 #### 绑定邮箱 POST
 * 路径：`/account/bind/email`
@@ -178,7 +182,10 @@
 * 请求头带JWT
 * 请求体：
 ```json
-邮箱验证码
+{
+    "emailId": "1285607932@qq.com",
+    "emailCode": "114514"
+}
 ```
 #### 获取特定玩家的统计信息 GET
 * 路径：`/dash/player/:player_name`
@@ -232,23 +239,31 @@
 * 路径：`/guild/get/guild?id=10`
 * URL参数：
   * `id`：公会ID
+#### 创建公会 POST
+* 路径：`/guild/create`
 #### 申请加入公会 POST
+* 路径：`/guild/join`
+* 请求头带JWT
+* 请求体（123代表目标公会ID）：
+```json
+123
+```
 #### 退出/解散公会 POST
 #### 向公会捐赠 POST
 * 路径：`/guild/donate`
 * 请求头带JWT
 * 要求公会角色至少为2（正式成员）
-* 请求体：
+* 请求体（里面的数字是金额）：
 ```json
-金额（数字）
+123
 ```
 #### 从公会提取捐赠 POST
 * 路径：`/guild/withdraw`
 * 请求头带JWT
 * 要求公会角色至少为3（管理员）
-* 请求体：
+* 请求体（里面的数字是金额）：
 ```json
-金额（数字）
+123
 ```
 #### 升级公会 POST
 * 路径：`/guild/upgrade`

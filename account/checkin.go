@@ -10,7 +10,7 @@ import (
 
 func Checkin(c *gin.Context, user *dbs.User) {
 
-	iterator := time.Now().Day()
+	iterator := uint(time.Now().Day())
 
 	if utils.GetBitByIndex(user.Checkin, iterator) {
 		c.JSON(200, utils.Resp("你今天已经签到过啦", nil, nil))
@@ -39,7 +39,7 @@ func GetCheckin(c *gin.Context, user *dbs.User) {
 
 	for i := 1; i <= 31; i++ {
 		datas = append(datas, Data{
-			Date: i, Status: utils.GetBitByIndex(user.Checkin, i),
+			Date: i, Status: utils.GetBitByIndex(user.Checkin, uint(i)),
 		})
 	}
 

@@ -2,7 +2,6 @@ package dbs
 
 type Guild struct {
 	Model
-	GID     string  `json:"gid" gorm:"not null;unique;type:VARCHAR(255);comment:公会ID"`
 	Name    string  `json:"name" gorm:"not null;unique;type:VARCHAR(255);comment:公会名"`
 	Number  uint    `json:"number" gorm:"not null;comment:公会人数"`
 	Logo    string  `json:"logo" gorm:"type:VARCHAR(255);comment:LOGO路径"`

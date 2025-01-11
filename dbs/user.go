@@ -3,6 +3,7 @@ package dbs
 import (
 	"errors"
 
+	"github.com/McaxDev/backend/utils"
 	"gorm.io/gorm"
 )
 
@@ -62,4 +63,55 @@ func (user *User) ExecWithCoins(
 
 		return logicFunc(tx)
 	})
+}
+
+func (user *User) ClearPrivate() {
+
+	if !utils.GetBitByID(user.Setting, "PubCheckin") {
+		user.Checkin = 0
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubSetting") {
+		user.Setting = 0
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubEmail") {
+		user.Email = "保密"
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubPhone") {
+		user.Phone = "保密"
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubQQ") {
+		user.QQ = "保密"
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubGameName") {
+		user.JavaName = "保密"
+		user.BedrockName = "保密"
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubGuild") {
+		user.GuildID = nil
+		user.GuildRole = 0
+		user.Guild = nil
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubProps") {
+		user.Props = nil
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubComments") {
+		user.Comments = nil
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubAlbums") {
+		user.Albums = nil
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubCoin") {
+		user.PermCoin = 0
+		user.TempCoin = 0
+	}
 }

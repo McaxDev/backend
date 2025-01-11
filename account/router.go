@@ -23,15 +23,20 @@ func GetRouter() *gin.Engine {
 	r.GET("/checkin", mids.OnlyAuthJwt(ajc, Checkin))
 	r.GET("/get/blacklist", GetBlackList)
 	r.GET("/get/checkin", mids.OnlyAuthJwt(ajc, GetCheckin))
-	r.GET("/get/userinfo", mids.OnlyAuthJwt(ajc, GetUserInfo, "Albums", "Comments", "Props"))
+	r.GET("/get/myinfo", mids.OnlyAuthJwt(ajc, GetMyinfo, "Guild", "Albums", "Comments", "Props"))
+	r.GET("/get/userinfo", mids.BindReq(GetUserinfo))
 	r.GET("/get/settings", mids.OnlyAuthJwt(ajc, GetSettings))
 
 	r.POST("/login", mids.BindReq(Login))
 	r.POST("/signup", authCaptcha, authEmail, mids.BindReq(Signup))
 	r.POST("/signout", authCaptcha, authEmail, mids.AuthJwt(ajc, Signout))
+
 	r.POST("/bind/phone", authPhone, mids.AuthJwt(ajc, BindPhone))
 	r.POST("/bind/email", authEmail, mids.AuthJwt(ajc, BindEmail))
-	r.POST("/set/settings", mids.AuthJwt(ajc, SetSettings))
+	r.POST("/unbind/phone", authPhone, mids.AuthJwt(ajc, UnbindPhone))
+	r.POST("/unbind/email", authEmail, mids.AuthJwt(ajc, UnbindEmail))
+
+	r.POST("/set/setting", mids.AuthJwt(ajc, SetSetting))
 	r.POST("/set/username", mids.AuthJwt(ajc, SetUsername))
 	r.POST("/set/password", mids.BindReq(SetPassword))
 	r.POST("/set/userinfo", mids.AuthJwt(ajc, SetUserInfo))

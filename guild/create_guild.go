@@ -21,13 +21,15 @@ func CreateGuild(user *dbs.User, c *gin.Context, req struct {
 		return
 	}
 
-	if err := utils.ExecWithCoins(user, 5, func(tx *gorm.DB) error {
-		return tx.Create(&dbs.Guild{
-			GID:    req.GID,
-			Name:   req.Name,
-			Number: 1,
-		}).Error
-	}); err != nil {
+	if err := user.ExecWithCoins(
+		DB, 5, false, func(tx *gorm.DB) error {
+			return tx.Create(&dbs.Guild{
+				GID:    req.GID,
+				Name:   req.Name,
+				Number: 1,
+			}).Error
+		},
+	); err != nil {
 		c.JSON(400, utils.Resp("公会创建失败", err, nil))
 		return
 	}

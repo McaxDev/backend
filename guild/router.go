@@ -18,6 +18,8 @@ func GetRouter() *gin.Engine {
 	r.GET("/get/myguild", mids.OnlyAuthJwt(ajc, GetMyGuild))
 	r.GET("/get/guilds", GetGuilds)
 
+	r.POST("/join", mids.AuthJwt(ajc, JoinGuild))
+
 	r.Use(mids.SetJSONBodyToCtx)
 
 	return r
