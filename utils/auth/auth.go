@@ -56,7 +56,7 @@ func (author Author) NewMid(kind string) gin.HandlerFunc {
 			return
 		}
 
-		rawNumber := req[kind+"ID"]
+		rawNumber := req[kind+"Id"]
 		rawAuthcode := req[kind+"Code"]
 		number, ok1 := rawNumber.(string)
 		authcode, ok2 := rawAuthcode.(string)

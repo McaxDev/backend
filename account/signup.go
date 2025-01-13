@@ -44,7 +44,5 @@ func Signup(c *gin.Context, req struct {
 		return
 	}
 
-	c.JSON(200, utils.Resp("用户创建成功", nil, gin.H{
-		"token": token,
-	}))
+	c.JSON(200, utils.Resp("用户创建成功", nil, token))
 }

@@ -9,15 +9,17 @@ import (
 func GetSettings(c *gin.Context, user *dbs.User) {
 
 	type SettingsStruct struct {
+		ID    string `json:"id"`
 		Name  string `json:"name"`
 		Value bool   `json:"value"`
 	}
 
 	var settings []SettingsStruct
-	for index, name := range utils.SettingsSlice {
+	for _, item := range utils.SettingsSlice {
 		settings = append(settings, SettingsStruct{
-			Name:  name,
-			Value: utils.GetBitByIndex(user.Setting, uint(index)),
+			ID:    item.ID,
+			Name:  item.Name,
+			Value: utils.GetBitByID(user.Setting, item.ID),
 		})
 	}
 
@@ -25,12 +27,12 @@ func GetSettings(c *gin.Context, user *dbs.User) {
 }
 
 func SetSetting(c *gin.Context, user *dbs.User, req struct {
-	Index uint
+	ID    string
 	Value bool
 }) {
 
-	utils.UpdateBitByIndex(
-		&user.Setting, req.Index, req.Value,
+	utils.UpdateBitByID(
+		&user.Setting, req.ID, req.Value,
 	)
 
 	if err := DB.Updates(&user).Error; err != nil {

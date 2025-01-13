@@ -57,15 +57,14 @@ func SetBlackList(c *gin.Context, user *dbs.User, req dbs.BlackList) {
 	c.JSON(200, utils.Resp("更新成功", nil, nil))
 }
 
-func DelBlackList(c *gin.Context, user *dbs.User, req dbs.BlackList) {
+func DelBlackList(c *gin.Context, user *dbs.User, id uint) {
 
-	if err := DB.First(&req).Error; err == gorm.ErrRecordNotFound {
-		c.JSON(400, utils.Resp("不存在这个黑名单记录", nil, nil))
-		return
-	}
-
-	if err := DB.Delete(&req).Error; err != nil {
+	if err := DB.Where("id = ?").Delete(
+		new(dbs.BlackList),
+	).Error; err != nil {
 		c.JSON(400, utils.Resp("删除失败", err, nil))
 		return
 	}
+
+	c.JSON(200, utils.Resp("删除成功", nil, nil))
 }

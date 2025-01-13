@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Upgrade(user *dbs.User, c *gin.Context) {
+func Upgrade(c *gin.Context, user *dbs.User) {
 
 	var cost uint
 	switch user.Guild.Level {

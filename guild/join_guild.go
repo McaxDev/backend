@@ -9,6 +9,11 @@ import (
 
 func JoinGuild(c *gin.Context, user *dbs.User, id uint) {
 
+	if user.GuildID != nil || user.GuildRole != 0 {
+		c.JSON(400, utils.Resp("你已经加入公会了", nil, nil))
+		return
+	}
+
 	if err := DB.First(
 		new(dbs.Guild), "id = ?", id,
 	).Error; err == gorm.ErrRecordNotFound {

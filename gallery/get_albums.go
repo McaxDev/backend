@@ -14,5 +14,5 @@ func GetAlbums(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.Resp("获取相册列表成功", nil, nil))
+	c.JSON(200, utils.Resp("获取相册列表成功", nil, data))
 }

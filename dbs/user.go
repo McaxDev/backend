@@ -16,15 +16,16 @@ type User struct {
 	Admin       bool       `json:"admin" gorm:"not null;comment:管理员"`
 	TempCoin    uint       `json:"tempCoin" gorm:"not null;comment:签到币"`
 	PermCoin    uint       `json:"permCoin" gorm:"not null;comment:蝾螈币"`
-	Checkin     int64      `json:"checkin" gorm:"not null;comment:签到记录"`
-	Setting     int64      `json:"setting" gorm:"not null;comment:设置"`
+	Checkin     int64      `json:"-" gorm:"not null;comment:签到记录"`
+	Setting     int64      `json:"-" gorm:"not null;comment:设置"`
 	Email       string     `json:"email" gorm:"type:VARCHAR(255);unique;comment:邮箱"`
-	Phone       string     `json:"phone" gorm:"type:VARCHAR(255);unique;comment:手机号"`
-	QQ          string     `json:"qq" gorm:"type:VARCHAR(255);unique;comment:QQ号"`
-	BedrockName string     `json:"bedrockName" gorm:"type:VARCHAR(255);unique;comment:基岩版用户名"`
-	JavaName    string     `json:"javaName" gorm:"type:VARCHAR(255);unique;comment:Java版用户名"`
+	Phone       *string    `json:"phone" gorm:"type:VARCHAR(255);unique;comment:手机号"`
+	QQ          *string    `json:"qq" gorm:"type:VARCHAR(255);unique;comment:QQ号"`
+	BedrockName *string    `json:"bedrockName" gorm:"type:VARCHAR(255);unique;comment:基岩版用户名"`
+	JavaName    *string    `json:"javaName" gorm:"type:VARCHAR(255);unique;comment:Java版用户名"`
 	GuildID     *uint      `json:"guildId" gorm:"index;comment:公会ID"`
 	GuildRole   uint       `json:"guildRole" gorm:"not null;comment:公会角色"`
+	Donation    uint       `json:"donation" gorm:"not null;comment:捐赠数额"`
 	Guild       *Guild     `json:"guild" gorm:"constraint:OnDelete:SET NULL"`
 	Props       []Property `json:"props" gorm:"constraint:OnDelete:CASCADE"`
 	Comments    []Comment  `json:"comments" gorm:"constraint:OnDelete:SET NULL"`
@@ -67,29 +68,23 @@ func (user *User) ExecWithCoins(
 
 func (user *User) ClearPrivate() {
 
-	if !utils.GetBitByID(user.Setting, "PubCheckin") {
-		user.Checkin = 0
-	}
-
-	if !utils.GetBitByID(user.Setting, "PubSetting") {
-		user.Setting = 0
-	}
+	secret := "保密"
 
 	if !utils.GetBitByID(user.Setting, "PubEmail") {
-		user.Email = "保密"
+		user.Email = secret
 	}
 
 	if !utils.GetBitByID(user.Setting, "PubPhone") {
-		user.Phone = "保密"
+		user.Phone = &secret
 	}
 
 	if !utils.GetBitByID(user.Setting, "PubQQ") {
-		user.QQ = "保密"
+		user.QQ = &secret
 	}
 
 	if !utils.GetBitByID(user.Setting, "PubGameName") {
-		user.JavaName = "保密"
-		user.BedrockName = "保密"
+		user.JavaName = &secret
+		user.BedrockName = &secret
 	}
 
 	if !utils.GetBitByID(user.Setting, "PubGuild") {
@@ -113,5 +108,9 @@ func (user *User) ClearPrivate() {
 	if !utils.GetBitByID(user.Setting, "PubCoin") {
 		user.PermCoin = 0
 		user.TempCoin = 0
+	}
+
+	if !utils.GetBitByID(user.Setting, "PubDonation") {
+		user.Donation = 0
 	}
 }

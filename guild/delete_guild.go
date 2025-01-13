@@ -7,35 +7,23 @@ import (
 	"gorm.io/gorm"
 )
 
-func DeleteGuild(user *dbs.User, c *gin.Context) {
+func Dissolve(c *gin.Context, user *dbs.User) {
 
-	if user.GuildRole == 3 {
+	if err := DB.Transaction(func(tx *gorm.DB) error {
 
-		if err := DB.Transaction(func(tx *gorm.DB) error {
-
-			if err := tx.Where(
-				"guild_id = ?", user.GuildID,
-			).Updates(&dbs.User{
-				GuildID:   nil,
-				GuildRole: 0,
-			}).Error; err != nil {
-				return err
-			}
-
-			return tx.Delete(&user.Guild).Error
-
-		}); err != nil {
-			c.JSON(500, utils.Resp("公会解散失败", err, nil))
+		if err := tx.Where(
+			"guild_id = ?", user.GuildID,
+		).Updates(&dbs.User{
+			GuildID:   nil,
+			GuildRole: 0,
+		}).Error; err != nil {
+			return err
 		}
 
-	} else {
+		return tx.Delete(&user.Guild).Error
 
-		user.GuildID = nil
-		user.GuildRole = 0
-		if err := DB.Updates(user).Error; err != nil {
-			c.JSON(500, utils.Resp("公会退出失败", err, nil))
-			return
-		}
+	}); err != nil {
+		c.JSON(500, utils.Resp("公会解散失败", err, nil))
 	}
 
 	c.JSON(200, utils.Resp("操作成功", nil, nil))

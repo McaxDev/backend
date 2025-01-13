@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Withdraw(user *dbs.User, c *gin.Context) {
+func Withdraw(c *gin.Context, user *dbs.User) {
 
 	var amount uint
 	if err := utils.GetBodyByCtx(c, &amount); err != nil {

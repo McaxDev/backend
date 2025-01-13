@@ -1,7 +1,10 @@
 package main
 
 import (
+	"time"
+
 	"github.com/McaxDev/backend/mids"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,6 +17,15 @@ func GetRouter() *gin.Engine {
 		DB:        DB,
 		OnlyAdmin: false,
 	}
+
+	r.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"GET", "POST"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"*"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	r.GET("/get/albums", GetAlbums)
 	r.GET("/get/images", mids.BindReq(GetImages))

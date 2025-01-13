@@ -18,7 +18,7 @@ func Login(c *gin.Context, req struct {
 	var user dbs.User
 	var accountType string
 	if isPhone(req.Account) {
-		user.Phone = req.Account
+		user.Phone = &req.Account
 		accountType = "phone"
 	} else if isEmail(req.Account) {
 		user.Email = req.Account

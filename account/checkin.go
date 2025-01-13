@@ -31,8 +31,8 @@ func Checkin(c *gin.Context, user *dbs.User) {
 func GetCheckin(c *gin.Context, user *dbs.User) {
 
 	type Data struct {
-		Date   int
-		Status bool
+		Date   int  `json:"data"`
+		Status bool `json:"status"`
 	}
 
 	var datas []Data

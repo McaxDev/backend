@@ -8,20 +8,12 @@ import (
 )
 
 func SetPassword(c *gin.Context, req struct {
-	Number   string
-	Authcode string
+	EmailID  string
 	Password string
 }) {
 
-	if err := Author.Auth(
-		req.Number, req.Authcode, "email",
-	); err != nil {
-		c.JSON(400, utils.Resp("邮箱验证失败", err, nil))
-		return
-	}
-
 	if err := DB.Model(new(dbs.User)).Where(
-		"email = ?", req.Number,
+		"email = ?", req.EmailID,
 	).Update(
 		"Password", req.Password,
 	).Error; err == gorm.ErrRecordNotFound {

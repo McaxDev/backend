@@ -61,8 +61,8 @@
 * 请求体：
 ```json
 {
-    "Account": "邮箱/手机号/用户名",
-    "Password": "用户密码"
+    "account": "邮箱/用户名/手机号/基岩版名称/Java版名称",
+    "password": "用户密码"
 }
 ```
 * 响应体data部分：
@@ -70,7 +70,7 @@
 "Bearer 用户凭证"
 ```
 #### 注册 POST
-* 路径：`/account/login`
+* 路径：`/account/signup`
 * 请求体：
 ```json
 {
@@ -78,8 +78,8 @@
     "captchaCode": "人机验证码",
     "emailId": "邮箱账号",
     "emailCode": "邮箱验证码",
-    "Username": "用户名",
-    "Password": "用户密码"
+    "username": "用户名",
+    "password": "用户密码"
 }
 ```
 * 响应体data部分：
@@ -101,8 +101,7 @@
     "email": "nerakolo@outlook.com",
     "telephone": "12312341234",
     "bedrockName": "Nerakolox",
-    "javaName": "Nerakolo",
-    "dstName": "nerakolo"
+    "javaName": "Nerakolo"
 }
 ```
 #### 获取其他用户的信息 GET
@@ -115,10 +114,12 @@
 ```json
 [
     {
+        "id": "UseMFA",
         "name": "启用MFA验证",
         "value": true
     },
     {
+        "id": "PubEmail",
         "name": "公开我的邮箱",
         "value": false
     }
@@ -186,6 +187,60 @@
     "emailId": "1285607932@qq.com",
     "emailCode": "114514"
 }
+```
+#### 更新用户名 POST
+* 路径：`/account/set/username`
+* 请求头带JWT
+* 请求体：
+```json
+"用户名字符串"
+```
+#### 更新密码 POST
+* 路径：`/account/set/password`
+* 需要验证邮箱
+* 请求体：
+```json
+    "emailId": "asdf@abc.com",
+    "emailCode": "123456",
+    "password": "114514"
+```
+#### 更新用户信息 POST
+* 路径：`/account/set/userinfo`
+* 请求头带JWT
+* 请求体：
+```json
+{
+    "avatar": "image.png",
+    "profile": "鸡你太美"
+}
+```
+#### 获取黑名单列表 GET
+* 路径：`/account/get/blacklist`
+* 响应体data部分：
+```json
+{
+    "phone": ["12312341234", "12323452345"],
+    "email": ["qwer@abc.com", "asfd@bcd.com"]
+}
+```
+#### 更新黑名单 POST
+* 路径：`/account/edit/blacklist`
+* 需要管理员权限
+* 请求体data部分：
+```json
+{
+    "id": "记录ID，带为编辑已有记录，不带为新增记录",
+    "type": "账号类型，如email或phone",
+    "value": "值号码",
+    "expiry": "解封时间，使用ISO8601格式"
+}
+```
+#### 删除黑名单 DELETE
+* 路径：`/account/del/blacklist`
+* 需要管理员权限
+* 请求体data部分（123代表黑名单记录的ID）：
+```json
+123
 ```
 #### 获取wiki列表
 * 路径：`/wiki/list`
@@ -338,47 +393,83 @@
 * 路径：`/guild/get/guild?id=10`
 * URL参数：
   * `id`：公会ID
-#### 创建公会 POST
-* 路径：`/guild/create`
+#### 重命名公会 POST
+* 路径：`/guild/rename`
+* 请求头带JWT，要求公会角色3或4
+* 请求体：
+```json
+"新公会名"
+```
 #### 申请加入公会 POST
 * 路径：`/guild/join`
-* 请求头带JWT
+* 请求头带JWT，要求公会角色0
 * 请求体（123代表目标公会ID）：
 ```json
 123
 ```
-#### 退出/解散公会 POST
+#### 退出公会 POST
+* 路径：`/guild/leave`
+* 请求头带JWT，要求公会角色1或2或3
+#### 审核入会申请 POST
+* 路径：`/guild/review`
+* 请求头带JWT，要求公会角色2或3
+* 请求体（ids代表用户id，agree代表同意或拒绝）：
+```json
+{
+    "ids": [1, 2, 3],
+    "agree": true
+}
+```
+#### 任命公会管理员 POST
+* 路径：`/guild/appoint`
+* 请求头带JWT，要求公会角色为4
+* 请求体：
+```json
+{
+    "ids": [1, 2, 3],
+    "agree": false
+}
+```
+#### 创建公会 POST
+* 路径：`/guild/create`
+* 请求头带JWT，要求公会角色为0
+* 请求体：
+```json
+{
+    "name": "理塘 - Leetown",
+    "profile": "到达世界最高城，理塘"
+}
+```
+#### 转让公会 POST
+* 路径：`/guild/transfer`
+* 请求头带JWT，要求公会角色为4
+* 请求体（5代表新会长id）：
+```json
+5
+```
+#### 解散公会 POST
+* 路径：`/guild/dissolve`
+* 请求头带JWT，要求公会角色为4
 #### 向公会捐赠 POST
 * 路径：`/guild/donate`
 * 请求头带JWT
-* 要求公会角色至少为2（正式成员）
-* 请求体（里面的数字是金额）：
+* 要求公会角色至少为2或3或4
+* 请求体（里面的数字是贡献币）：
 ```json
 123
 ```
 #### 从公会提取捐赠 POST
 * 路径：`/guild/withdraw`
 * 请求头带JWT
-* 要求公会角色至少为3（管理员）
-* 请求体（里面的数字是金额）：
+* 要求公会角色为3或4
+* 请求体（里面的数字是贡献币）：
 ```json
 123
 ```
 #### 升级公会 POST
 * 路径：`/guild/upgrade`
 * 请求头带JWT
-* 要求公会角色至少为3（管理员）
-#### 设置其他成员角色 POST
-* 路径：`/guild/set/role`
-* 请求头带JWT
-* 管理员可以任命正式成员，会长可以任命管理员，公会角色至少为3
-* 请求体：
-```json
-{
-    "userIds": [1, 2, 3], // 用户ID列表
-    "role": 2 // 角色，1申请者2会员3管理员
-}
-```
+* 要求公会角色为3或4
 ### HTTP协议（子域名为static.mcax.cn）
 * 访问`https://static.mcax.cn/`将得到一个文件系统。
 #### 响应体格式（JSON）：

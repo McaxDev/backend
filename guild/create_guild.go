@@ -7,14 +7,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateGuild(user *dbs.User, c *gin.Context, req struct {
-	GID  string
-	Name string
+func CreateGuild(c *gin.Context, user *dbs.User, req struct {
+	Name    string
+	Profile string
 }) {
 
 	if err := DB.Where(
-		"gid = ?", req.GID,
-	).Or(
 		"name = ?", req.Name,
 	).First(new(dbs.Guild)).Error; err != nil {
 		c.JSON(400, utils.Resp("此公会已存在", err, nil))
@@ -24,9 +22,9 @@ func CreateGuild(user *dbs.User, c *gin.Context, req struct {
 	if err := user.ExecWithCoins(
 		DB, 5, false, func(tx *gorm.DB) error {
 			return tx.Create(&dbs.Guild{
-				GID:    req.GID,
-				Name:   req.Name,
-				Number: 1,
+				Name:    req.Name,
+				Profile: req.Profile,
+				Number:  1,
 			}).Error
 		},
 	); err != nil {

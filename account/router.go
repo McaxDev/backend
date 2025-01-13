@@ -1,7 +1,10 @@
 package main
 
 import (
+	"time"
+
 	"github.com/McaxDev/backend/mids"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +22,15 @@ func GetRouter() *gin.Engine {
 
 	r := gin.Default()
 	r.Use(mids.SetJSONBodyToCtx)
+
+	r.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"GET", "POST"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"*"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	r.GET("/checkin", mids.OnlyAuthJwt(ajc, Checkin))
 	r.GET("/get/blacklist", GetBlackList)
@@ -38,7 +50,7 @@ func GetRouter() *gin.Engine {
 
 	r.POST("/set/setting", mids.AuthJwt(ajc, SetSetting))
 	r.POST("/set/username", mids.AuthJwt(ajc, SetUsername))
-	r.POST("/set/password", mids.BindReq(SetPassword))
+	r.POST("/set/password", authEmail, mids.BindReq(SetPassword))
 	r.POST("/set/userinfo", mids.AuthJwt(ajc, SetUserInfo))
 
 	ajc.OnlyAdmin = true

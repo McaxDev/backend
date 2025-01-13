@@ -12,23 +12,19 @@ func GetMyinfo(c *gin.Context, user *dbs.User) {
 }
 
 func SetUserInfo(c *gin.Context, user *dbs.User, req struct {
-	Type  string
-	Value string
+	Avatar  string
+	Profile string
 }) {
 
-	query := DB.Model(&user)
-
-	switch req.Type {
-	case "avatar":
-		query = query.Update("Avatar", req.Value)
-	case "profile":
-		query = query.Update("Profile", req.Value)
-	default:
-		c.JSON(400, utils.Resp("不支持设置此种信息", nil, nil))
-		return
+	if req.Avatar != "" {
+		user.Avatar = req.Avatar
 	}
 
-	if err := query.Error; err != nil {
+	if req.Profile != "" {
+		user.Profile = req.Profile
+	}
+
+	if err := DB.Save(user).Error; err != nil {
 		c.JSON(500, utils.Resp("资料更新失败", err, nil))
 		return
 	}

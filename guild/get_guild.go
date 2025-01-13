@@ -9,7 +9,7 @@ import (
 func GetGuild(c *gin.Context, guildId uint) {
 
 	var guild dbs.Guild
-	if err := DB.Preload("User").Where(
+	if err := DB.Preload("Users").Where(
 		"ID = ?", guildId,
 	).First(&guild).Error; err != nil {
 		c.JSON(500, utils.Resp("查看公会失败", err, nil))

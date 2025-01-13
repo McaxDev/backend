@@ -27,33 +27,36 @@ type Setting struct {
 
 // 如果改了Pub，要去privacy.go里面改
 var SettingsTable = map[string]uint{
-	"UseMFA":      0,
-	"PubCheckin":  1,
-	"PubSetting":  2,
-	"PubEmail":    3,
-	"PubPhone":    4,
-	"PubQQ":       5,
-	"PubGameName": 6,
-	"PubGuild":    7,
-	"PubProps":    8,
-	"PubComments": 9,
-	"PubAlbums":   10,
-	"PubCoin":     11,
-	"PubGameData": 12,
+	"PubEmail":    1,
+	"PubPhone":    2,
+	"PubQQ":       3,
+	"PubGameName": 4,
+	"PubGuild":    5,
+	"PubProps":    6,
+	"PubComments": 7,
+	"PubAlbums":   8,
+	"PubCoin":     9,
+	"PubGameData": 10,
+	"PubDonation": 11,
+	"UseMFA":      12,
 }
 
-var SettingsSlice = []string{
-	"启用MFA",
-	"公开签到记录",
-	"公开个人设置",
-	"公开邮箱",
-	"公开手机号",
-	"公开QQ号",
-	"公开游戏名",
-	"公开我的公会",
-	"公开我的道具",
-	"公开我的评论",
-	"公开我的相册",
-	"公开我的金额",
-	"公开游戏数据",
+type SettingsSliceElem struct {
+	Name string
+	ID   string
+}
+
+var SettingsSlice = []SettingsSliceElem{
+	{"公开邮箱", "PubEmail"},
+	{"公开手机号", "PubPhone"},
+	{"公开QQ号", "PubQQ"},
+	{"公开游戏名", "PubGameName"},
+	{"公开我的公会", "PubGuild"}, 
+	{"公开我的道具", "PubProps"}, 
+	{"公开我的评论", "PubComments"},
+	{"公开我的相册", "PubAlbums"},
+	{"公开我的金额", "PubCoin"},
+	{"公开游戏数据", "PubGameData"},
+	{"公开捐赠数额", "PubDonation"},
+	{"启用MFA", "UseMFA"},
 }
