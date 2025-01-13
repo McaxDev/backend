@@ -1,3 +1,0 @@
-
--- users
-insert into users ()
