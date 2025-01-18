@@ -103,9 +103,9 @@ func HandleAuthJwt(
 	user := dbs.User{}
 	user.ID = userId
 
-	query := ajc.DB
+	query := ajc.DB.Set("all", true)
 	for _, value := range preloads {
-		query.Preload(value)
+		query = query.Preload(value)
 	}
 
 	if err := query.First(&user).Error; err == gorm.ErrRecordNotFound {

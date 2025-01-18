@@ -9,7 +9,7 @@ import (
 func GetAlbums(c *gin.Context) {
 
 	var data []dbs.Album
-	if err := DB.Find(&data).Error; err != nil {
+	if err := DB.Preload("User").Preload("Guild").Find(&data).Error; err != nil {
 		c.JSON(500, utils.Resp("获取相册列表失败", err, nil))
 		return
 	}

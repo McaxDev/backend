@@ -298,11 +298,11 @@
 12
 ```
 #### 查看相册列表 GET
-* 路径：`/get/albums`
+* 路径：`/gallery/get/albums`
 #### 查看相册的图片列表 GET
-* 路径（10是相册ID）：`/get/images?id=10`
+* 路径（10是相册ID）：`/gallery/get/images?id=10`
 #### 创建相册 POST
-* 路径：`/add/album`
+* 路径：`/gallery/add/album`
 * 请求头带JWT
 * 请求体：
 ```json
@@ -312,7 +312,7 @@
 }
 ```
 #### 上传图片 POST
-* 路径：`/add/image`
+* 路径：`/gallery/add/image`
 * 请求头带JWT
 * 请求体MIME类型为`multipart/form-data`
 * 请求体字段列表：
@@ -322,31 +322,31 @@
   * `description`: 图片描述
 #### 修改相册信息 POST
 * 对于修改或删除相册，web管理员具有所有相册权限，相册创建者具有他创建的相册的权限，如果相册属于公会，那么公会管理员有该相册的权限
-* 路径：`/set/album`
+* 路径：`/gallery/set/album`
 * 请求头带JWT
 #### 修改图片信息 POST
-* 路径：`/set/image`
+* 路径：`/gallery/set/image`
 * 请求头带JWT
 #### 删除相册 DELETE
-* 路径：`/del/album`
+* 路径：`/gallery/del/album`
 * 请求头带JWT
 * 请求体（里面数字是相册ID）：
 ```json
 3
 ```
 #### 删除图片 DELETE
-* 路径：`/del/images`
+* 路径：`/gallery/del/images`
 * 请求头带JWT
 * 请求体（里面数字是图片ID）：
 ```json
 [1, 2, 3]
 ```
 #### 获取特定玩家的统计信息 GET
-* 路径：`/dash/player/:player_name`
+* 路径：`/game/player/:player_name`
 * 查询字符串参数：`server=服务器ID`
 * 响应体data部分：见`docs/result.json`
 #### 获取特定统计信息的排行榜 GET
-* 路径：`/dash/rank/:stat`，`:stat`包括`mined`,`picked_up`,`crafted`,`broken`,`play_time`,`deaths`,`mob_kills`,`damage_dealt`,`drop`
+* 路径：`/game/rank/:stat`，`:stat`包括`mined`,`picked_up`,`crafted`,`broken`,`play_time`,`deaths`,`mob_kills`,`damage_dealt`,`drop`
 * 查询字符串参数：`server=paper`，见上文“服务器ID”
 * 响应体data部分：
 ```json
@@ -380,6 +380,24 @@
     "Command": "/list"
 }
 ```
+#### 发送绑定MCJE的验证码 POST
+* 路径：`/game/bind/je`
+* 需要请求头带JWT
+* 请求体：
+```json
+"用户名"
+```
+#### 验证绑定验证码 POST
+* 路径：`/game/auth/bind`
+* 需要请求头带JWT
+* 请求体：
+```json
+{
+    "gamename": "玩家名",
+    "authcode": "验证码内容"
+}
+```
+#### 查看在线玩家 GET
 * 响应体data部分：
 ```json
 "当前在线1人：Nerakolo"
@@ -470,6 +488,103 @@
 * 路径：`/guild/upgrade`
 * 请求头带JWT
 * 要求公会角色为3或4
+#### 获取帖子列表 GET
+* 路径：`/bbs/get/posts?category=bedrock`
+* 响应体data部分：
+```json
+[
+    {
+        "id": 1,
+        "createdAt": "创建时间",
+        "updatedAt": "更新时间",
+        "title": "标题",
+        "category": "分类",
+        "guild": {},
+        "user": {},
+    }
+]
+```
+#### 获取特定帖子内容 GET
+* 路径：`/bbs/get/post?id=1`
+* 响应体data部分：
+```json
+{
+    "id": 1,
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "title": "标题",
+    "category": "分类",
+    "source": "源MD内容",
+    "content": "编译后html内容",
+    "guild": {},
+    "user": {},
+    "comments": []
+}
+```
+#### 发帖 POST
+* 路径：`/bbs/add/post`
+* 请求头带JWT
+* 请求体（useMd表示是否用markdown解析源内容）：
+```json
+{
+    "category": "分类",
+    "title": "标题",
+    "content": "源内容",
+    "useMd": true
+}
+```
+#### 发评论 POST
+* 路径：`/bbs/add/comment`
+* 请求头带JWT
+* 请求体（useMd表示是否用markdown解析源内容，id是帖子id）：
+* attitude表示态度，-1,0,1分别代表反对、无意见，支持。
+```json
+{
+    "id": 10,
+    "content": "帖子内容",
+    "useMd": false,
+    "attitude": 0
+}
+```
+#### 改帖子 POST
+* 路径：`/bbs/set/post`
+* 请求头带JWT
+* 请求体：
+* useMd表示是否用markdown解析，只需要提供需要修改的字段
+```json
+{
+    "id": 10,
+    "category": "分类",
+    "title": "标题",
+    "content": "源内容",
+    "useMd": false
+}
+```
+#### 改评论 POST
+* 路径：`/bbs/set/comment`
+* 请求头带JWT
+* useMd表示是否用markdown解析，只需要提供需要修改的字段
+* 请求体：
+```json
+    "id": 10,
+    "attitude": 0,
+    "content": "评论内容",
+    "useMd": false
+```
+#### 删帖子 DELETE
+* 路径：`/bbs/del/posts`
+* 请求头带JWT
+* 请求体（提供帖子ID列表）：
+```json
+[0, 1, 2]
+```
+#### 删评论 DELETE
+* 路径：`/bbs/del/comments`
+* 请求头带JWT
+* 请求体（提供评论ID列表）：
+```json
+[0, 1, 2]
+```
 ### HTTP协议（子域名为static.mcax.cn）
 * 访问`https://static.mcax.cn/`将得到一个文件系统。
 #### 响应体格式（JSON）：

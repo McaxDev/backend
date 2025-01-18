@@ -26,10 +26,17 @@ type User struct {
 	GuildID     *uint      `json:"guildId" gorm:"index;comment:公会ID"`
 	GuildRole   uint       `json:"guildRole" gorm:"not null;comment:公会角色"`
 	Donation    uint       `json:"donation" gorm:"not null;comment:捐赠数额"`
+	Exp         uint       `json:"exp" gorm:"not null;comment:经验值"`
+	Level       uint       `json:"level" gorm:"-"`
 	Guild       *Guild     `json:"guild" gorm:"constraint:OnDelete:SET NULL"`
 	Props       []Property `json:"props" gorm:"constraint:OnDelete:CASCADE"`
 	Comments    []Comment  `json:"comments" gorm:"constraint:OnDelete:SET NULL"`
 	Albums      []Album    `json:"albums" gorm:"constraint:OnDelete:SET NULL;"`
+}
+
+type LevelExperience struct {
+	Experience uint
+	Level      uint
 }
 
 func (user *User) ExecWithCoins(
@@ -66,51 +73,73 @@ func (user *User) ExecWithCoins(
 	})
 }
 
-func (user *User) ClearPrivate() {
+func (user *User) AfterFind(tx *gorm.DB) (err error) {
 
-	secret := "保密"
+	all, ok := tx.Statement.Context.Value("all").(bool)
+	if !ok && !all {
+		secret := "保密"
 
-	if !utils.GetBitByID(user.Setting, "PubEmail") {
-		user.Email = secret
+		if !utils.GetBitByID(user.Setting, "PubEmail") {
+			user.Email = secret
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubPhone") {
+			user.Phone = &secret
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubQQ") {
+			user.QQ = &secret
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubGameName") {
+			user.JavaName = &secret
+			user.BedrockName = &secret
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubGuild") {
+			user.GuildID = nil
+			user.GuildRole = 0
+			user.Guild = nil
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubProps") {
+			user.Props = nil
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubComments") {
+			user.Comments = nil
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubAlbums") {
+			user.Albums = nil
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubCoin") {
+			user.PermCoin = 0
+			user.TempCoin = 0
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubDonation") {
+			user.Donation = 0
+		}
+
+		if !utils.GetBitByID(user.Setting, "PubExp") {
+			user.Exp = 0
+		} else {
+			if user.Exp >= 0 {
+				user.Level = 1
+			} else if user.Exp >= 100 {
+				user.Level = 2
+			} else if user.Exp >= 500 {
+				user.Level = 3
+			} else if user.Exp >= 1000 {
+				user.Level = 4
+			} else if user.Exp >= 5000 {
+				user.Level = 5
+			} else if user.Exp >= 10000 {
+				user.Level = 6
+			}
+		}
 	}
-
-	if !utils.GetBitByID(user.Setting, "PubPhone") {
-		user.Phone = &secret
-	}
-
-	if !utils.GetBitByID(user.Setting, "PubQQ") {
-		user.QQ = &secret
-	}
-
-	if !utils.GetBitByID(user.Setting, "PubGameName") {
-		user.JavaName = &secret
-		user.BedrockName = &secret
-	}
-
-	if !utils.GetBitByID(user.Setting, "PubGuild") {
-		user.GuildID = nil
-		user.GuildRole = 0
-		user.Guild = nil
-	}
-
-	if !utils.GetBitByID(user.Setting, "PubProps") {
-		user.Props = nil
-	}
-
-	if !utils.GetBitByID(user.Setting, "PubComments") {
-		user.Comments = nil
-	}
-
-	if !utils.GetBitByID(user.Setting, "PubAlbums") {
-		user.Albums = nil
-	}
-
-	if !utils.GetBitByID(user.Setting, "PubCoin") {
-		user.PermCoin = 0
-		user.TempCoin = 0
-	}
-
-	if !utils.GetBitByID(user.Setting, "PubDonation") {
-		user.Donation = 0
-	}
+	return nil
 }

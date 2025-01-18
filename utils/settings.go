@@ -55,8 +55,8 @@ var SettingsSlice = []SettingsSliceElem{
 	{"公开我的道具", "PubProps"}, 
 	{"公开我的评论", "PubComments"},
 	{"公开我的相册", "PubAlbums"},
-	{"公开我的金额", "PubCoin"},
+	{"公开我的金额（关闭则显示0）", "PubCoin"},
 	{"公开游戏数据", "PubGameData"},
-	{"公开捐赠数额", "PubDonation"},
+	{"展示捐赠数额（关闭则显示0）", "PubDonation"},
 	{"启用MFA", "UseMFA"},
 }
