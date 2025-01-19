@@ -3,40 +3,36 @@ package dbs
 import (
 	"errors"
 
-	"github.com/McaxDev/backend/utils"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	Model
-	Name        string     `json:"name" gorm:"type:VARCHAR(255);not null;unique;comment:用户名"`
-	Password    string     `json:"-" gorm:"type:VARCHAR(255);not null;comment:密码"`
-	Avatar      string     `json:"avatar" gorm:"type:VARCHAR(255);comment:头像"`
-	Profile     string     `json:"profile" gorm:"type:TEXT;comment:个人简介"`
-	Admin       bool       `json:"admin" gorm:"not null;comment:管理员"`
-	TempCoin    uint       `json:"tempCoin" gorm:"not null;comment:签到币"`
-	PermCoin    uint       `json:"permCoin" gorm:"not null;comment:蝾螈币"`
-	Checkin     int64      `json:"-" gorm:"not null;comment:签到记录"`
-	Setting     int64      `json:"-" gorm:"not null;comment:设置"`
-	Email       string     `json:"email" gorm:"type:VARCHAR(255);unique;comment:邮箱"`
-	Phone       *string    `json:"phone" gorm:"type:VARCHAR(255);unique;comment:手机号"`
-	QQ          *string    `json:"qq" gorm:"type:VARCHAR(255);unique;comment:QQ号"`
-	BedrockName *string    `json:"bedrockName" gorm:"type:VARCHAR(255);unique;comment:基岩版用户名"`
-	JavaName    *string    `json:"javaName" gorm:"type:VARCHAR(255);unique;comment:Java版用户名"`
-	GuildID     *uint      `json:"guildId" gorm:"index;comment:公会ID"`
-	GuildRole   uint       `json:"guildRole" gorm:"not null;comment:公会角色"`
-	Donation    uint       `json:"donation" gorm:"not null;comment:捐赠数额"`
-	Exp         uint       `json:"exp" gorm:"not null;comment:经验值"`
-	Level       uint       `json:"level" gorm:"-"`
-	Guild       *Guild     `json:"guild" gorm:"constraint:OnDelete:SET NULL"`
-	Props       []Property `json:"props" gorm:"constraint:OnDelete:CASCADE"`
-	Comments    []Comment  `json:"comments" gorm:"constraint:OnDelete:SET NULL"`
-	Albums      []Album    `json:"albums" gorm:"constraint:OnDelete:SET NULL;"`
-}
-
-type LevelExperience struct {
-	Experience uint
-	Level      uint
+	Name        string            `json:"name" gorm:"type:VARCHAR(255);not null;unique;comment:用户名"`
+	Password    string            `json:"-" gorm:"type:VARCHAR(255);not null;comment:密码"`
+	Avatar      string            `json:"avatar" gorm:"type:VARCHAR(255);comment:头像"`
+	Profile     string            `json:"profile" gorm:"type:TEXT;comment:个人简介"`
+	Admin       bool              `json:"admin" gorm:"not null;comment:管理员"`
+	TempCoin    uint              `json:"tempCoin" gorm:"not null;comment:签到币"`
+	PermCoin    uint              `json:"permCoin" gorm:"not null;comment:蝾螈币"`
+	Checkin     int64             `json:"-" gorm:"not null;comment:签到记录"`
+	Email       string            `json:"email" gorm:"type:VARCHAR(255);unique;comment:邮箱"`
+	Phone       *string           `json:"phone" gorm:"type:VARCHAR(255);unique;comment:手机号"`
+	QQ          *string           `json:"qq" gorm:"type:VARCHAR(255);unique;comment:QQ号"`
+	BedrockName *string           `json:"bedrockName" gorm:"type:VARCHAR(255);unique;comment:基岩版用户名"`
+	JavaName    *string           `json:"javaName" gorm:"type:VARCHAR(255);unique;comment:Java版用户名"`
+	GuildID     *uint             `json:"guildId" gorm:"index;comment:公会ID"`
+	GuildRole   uint              `json:"guildRole" gorm:"not null;comment:公会角色"`
+	Donation    uint              `json:"donation" gorm:"not null;comment:捐赠数额"`
+	Exp         uint              `json:"exp" gorm:"not null;comment:经验值"`
+	Level       uint              `json:"level" gorm:"-"`
+	StrMeta     map[string]string `json:"str_meta" gorm:"serializer:json;type:JSON;comment:字符串元数据"`
+	BoolMeta    map[string]bool   `json:"bool_meta" gorm:"serializer:json;type:JSON;comment:布尔元数据"`
+	Guild       *Guild            `json:"guild" gorm:"constraint:OnDelete:SET NULL"`
+	Props       []Property        `json:"props" gorm:"constraint:OnDelete:CASCADE"`
+	Comments    []Comment         `json:"comments" gorm:"constraint:OnDelete:SET NULL"`
+	Albums      []Album           `json:"albums" gorm:"constraint:OnDelete:SET NULL;"`
+	Threads     []Thread
 }
 
 func (user *User) ExecWithCoins(
@@ -79,51 +75,51 @@ func (user *User) AfterFind(tx *gorm.DB) (err error) {
 	if !ok && !all {
 		secret := "保密"
 
-		if !utils.GetBitByID(user.Setting, "PubEmail") {
+		if !user.BoolMeta["PubEmail"] {
 			user.Email = secret
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubPhone") {
+		if !user.BoolMeta["PubPhone"] {
 			user.Phone = &secret
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubQQ") {
+		if !user.BoolMeta["PubQQ"] {
 			user.QQ = &secret
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubGameName") {
+		if !user.BoolMeta["PubGameName"] {
 			user.JavaName = &secret
 			user.BedrockName = &secret
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubGuild") {
+		if !user.BoolMeta["PubGuild"] {
 			user.GuildID = nil
 			user.GuildRole = 0
 			user.Guild = nil
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubProps") {
+		if !user.BoolMeta["PubProps"] {
 			user.Props = nil
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubComments") {
+		if !user.BoolMeta["PubComments"] {
 			user.Comments = nil
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubAlbums") {
+		if !user.BoolMeta["PubAlbums"] {
 			user.Albums = nil
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubCoin") {
+		if !user.BoolMeta["PubCoin"] {
 			user.PermCoin = 0
 			user.TempCoin = 0
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubDonation") {
+		if !user.BoolMeta["PubDonation"] {
 			user.Donation = 0
 		}
 
-		if !utils.GetBitByID(user.Setting, "PubExp") {
+		if !user.BoolMeta["PubExp"] {
 			user.Exp = 0
 		} else {
 			if user.Exp >= 0 {

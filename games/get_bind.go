@@ -4,17 +4,17 @@ import (
 	"context"
 	"time"
 
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func GetBindBedrock(c *gin.Context, user *dbs.User, req struct {
-	Username  string
+func GetBind(c *gin.Context, r struct {
+	Player    string
+	Game      string
 	AccessKey string
 }) {
 
-	if Config.AccessKey != req.AccessKey {
+	if Config.AccessKey != r.AccessKey {
 		c.String(400, "非法访问")
 		return
 	}
@@ -23,7 +23,7 @@ func GetBindBedrock(c *gin.Context, user *dbs.User, req struct {
 
 	if err := Redis.Set(
 		context.Background(),
-		"auth_bedrock_"+req.Username,
+		"auth_"+r.Game+"_"+r.Player,
 		authcode,
 		10*time.Minute,
 	).Err(); err != nil {

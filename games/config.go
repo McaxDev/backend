@@ -10,6 +10,8 @@ var Config struct {
 	JWTKey       string `env:"JWT_KEY"`
 	AccessKey    string `env:"ACCESS_KEY"`
 	Docker       string `env:"DOCKER"`
+	RCONPorts    string `env:"RCON_PORTS"`
+	HostAddr     string `env:"HOST_ADDR"`
 	BackupFolder string
 	SSL          utils.SSLConfig
 	DB           dbs.DBConfig
@@ -19,4 +21,5 @@ func LoadConfig() {
 	utils.LoadConfig(&Config)
 	utils.LoadSSLConfig(&Config.SSL)
 	dbs.LoadDBConfig(&Config.DB)
+
 }

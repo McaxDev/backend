@@ -19,23 +19,21 @@ func GetSettings(c *gin.Context, user *dbs.User) {
 		settings = append(settings, SettingsStruct{
 			ID:    item.ID,
 			Name:  item.Name,
-			Value: utils.GetBitByID(user.Setting, item.ID),
+			Value: user.BoolMeta[item.ID],
 		})
 	}
 
 	c.JSON(200, settings)
 }
 
-func SetSetting(c *gin.Context, user *dbs.User, req struct {
+func SetSetting(c *gin.Context, u *dbs.User, r struct {
 	ID    string
 	Value bool
 }) {
 
-	utils.UpdateBitByID(
-		&user.Setting, req.ID, req.Value,
-	)
+	u.BoolMeta[r.ID] = r.Value
 
-	if err := DB.Updates(&user).Error; err != nil {
+	if err := DB.Updates(&u).Error; err != nil {
 		c.JSON(500, utils.Resp("设置更新失败", err, nil))
 		return
 	}

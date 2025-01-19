@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetPlayerGuild(c *gin.Context) {
+func GetGuild(c *gin.Context) {
 
 	player := c.Query("player")
 	key := c.Query("key")

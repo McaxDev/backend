@@ -14,6 +14,8 @@ func main() {
 		log.Fatalln("初始化失败：" + err.Error()) 
 	}
 
+	GetCron().Start()
+
 	if err := utils.RunGin(
 		GetRouter(), Config.Port, Config.SSL,
 	); err != nil {

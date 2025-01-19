@@ -31,6 +31,8 @@ func Signup(c *gin.Context, req struct {
 		Password: req.Password,
 		Email:    req.EmailID,
 		Admin:    false,
+		BoolMeta: make(map[string]bool),
+		StrMeta:  make(map[string]string),
 	}
 
 	if err := DB.Create(&user).Error; err != nil {
