@@ -16,9 +16,7 @@ func GetRouter() *gin.Engine {
 		OnlyAdmin: false,
 	}
 
-	authCaptcha := Author.NewMid("captcha")
-	authEmail := Author.NewMid("email")
-	authPhone := Author.NewMid("phone")
+	v := mids.Verifier{Redis: Redis}
 
 	r := gin.Default()
 	r.Use(mids.SetJSONBodyToCtx)
@@ -40,17 +38,17 @@ func GetRouter() *gin.Engine {
 	r.GET("/get/settings", mids.OnlyAuthJwt(ajc, GetSettings))
 
 	r.POST("/login", mids.BindReq(Login))
-	r.POST("/signup", authCaptcha, authEmail, mids.BindReq(Signup))
-	r.POST("/signout", authCaptcha, authEmail, mids.AuthJwt(ajc, Signout))
+	r.POST("/signup", v.Mid("captcha"), v.Mid("email"), mids.BindReq(Signup))
+	r.POST("/signout", v.Mid("captcha"), v.Mid("email"), mids.OnlyAuthJwt(ajc, Signout))
 
-	r.POST("/bind/phone", authPhone, mids.AuthJwt(ajc, BindPhone))
-	r.POST("/bind/email", authEmail, mids.AuthJwt(ajc, BindEmail))
-	r.POST("/unbind/phone", authPhone, mids.AuthJwt(ajc, UnbindPhone))
-	r.POST("/unbind/email", authEmail, mids.AuthJwt(ajc, UnbindEmail))
+	r.POST("/bind/phone", v.Mid("phone"), mids.AuthJwt(ajc, BindPhone))
+	r.POST("/bind/email", v.Mid("email"), mids.AuthJwt(ajc, BindEmail))
+	r.POST("/unbind/phone", v.Mid("phone"), mids.AuthJwt(ajc, UnbindPhone))
+	r.POST("/unbind/email", v.Mid("email"), mids.AuthJwt(ajc, UnbindEmail))
 
 	r.POST("/set/setting", mids.AuthJwt(ajc, SetSetting))
 	r.POST("/set/username", mids.AuthJwt(ajc, SetUsername))
-	r.POST("/set/password", authEmail, mids.BindReq(SetPassword))
+	r.POST("/set/password", v.Mid("email"), mids.BindReq(SetPassword))
 	r.POST("/set/userinfo", mids.AuthJwt(ajc, SetUserInfo))
 
 	ajc.OnlyAdmin = true

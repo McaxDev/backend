@@ -1,6 +1,6 @@
-cp Dockerfile .. &&
-cd .. &&
-docker build -t mcaxdev/games . &&
-rm Dockerfile &&
-docker-compose -f /srv/axo/games/docker-compose.yml up -d &&
-docker logs -f axo-games
+APP_NAME='games'
+
+go build -o app . &&
+docker build -t mcaxdev/${APP_NAME} . &&
+docker-compose -f /srv/axo/${APP_NAME}/docker-compose.yml up -d &&
+docker logs -f axo-${APP_NAME}

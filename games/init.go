@@ -21,6 +21,7 @@ type Server struct {
 	Name string `json:"name"`
 	Game string `json:"game"`
 	Path string `json:"path,omitempty"`
+	Port string `json:"port"`
 	RCON struct {
 		Port     string
 		Password string

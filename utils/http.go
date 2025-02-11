@@ -11,10 +11,11 @@ import (
 )
 
 func Resp(message string, err error, data any) gin.H {
-	var errMsg string
+	var errMsg *string
 	if err != nil {
 		fmt.Println(message + err.Error())
-		errMsg = err.Error()
+		msg := err.Error()
+		errMsg = &msg
 	}
 	return gin.H{
 		"message": message,

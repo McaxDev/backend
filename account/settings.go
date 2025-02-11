@@ -23,7 +23,7 @@ func GetSettings(c *gin.Context, user *dbs.User) {
 		})
 	}
 
-	c.JSON(200, settings)
+	c.JSON(200, utils.Resp("获取设置成功", nil, settings))
 }
 
 func SetSetting(c *gin.Context, u *dbs.User, r struct {

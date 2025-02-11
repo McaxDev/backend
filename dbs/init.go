@@ -14,6 +14,7 @@ var Instances = []any{
 	new(BlackList),
 	new(Guild),
 	new(Wiki),
+	new(Online),
 
 	new(User),
 	new(Post),

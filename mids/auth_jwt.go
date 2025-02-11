@@ -71,7 +71,6 @@ func HandleAuthJwt(
 ) (*dbs.User, error) {
 	rawToken := c.GetHeader("Authorization")
 	if len(rawToken) < 8 {
-		c.AbortWithStatusJSON(401, utils.Resp("token无效", nil, nil))
 		return nil, errors.New("token无效")
 	}
 
@@ -102,8 +101,9 @@ func HandleAuthJwt(
 
 	user := dbs.User{}
 	user.ID = userId
+	user.TempMeta = map[string]bool{"allinfo": true}
 
-	query := ajc.DB.Set("all", true)
+	query := ajc.DB
 	for _, value := range preloads {
 		query = query.Preload(value)
 	}

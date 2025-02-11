@@ -3,7 +3,7 @@ package dbs
 type Post struct {
 	Model
 	Title    string    `json:"title" gorm:"type:VARCHAR(255);not null;unique;comment:标题"`
-	Category string    `json:"category,omitempty" gorm:"type:VARCHAR(255);comment:分类"`
+	Forum    string    `json:"forum,omitempty" gorm:"type:VARCHAR(255);comment:论坛"`
 	Source   string    `json:"source,omitempty" gorm:"type:TEXT;not null;comment:原内容"`
 	Content  string    `json:"content,omitempty" gorm:"type:TEXT;not null;comment:内容"`
 	GuildID  *uint     `json:"-" gorm:"index;comment:公会ID"`

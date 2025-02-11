@@ -1,6 +1,6 @@
-cp Dockerfile .. &&
-cd .. &&
-docker build -t mcaxdev/gallery . &&
-rm Dockerfile &&
-docker-compose -f /srv/axo/gallery/docker-compose.yml up -d &&
-docker logs -f axo-gallery
+APP_NAME='gallery'
+
+go build -o app . &&
+docker build -t mcaxdev/${APP_NAME} . &&
+docker-compose -f /srv/axo/${APP_NAME}/docker-compose.yml up -d &&
+docker logs -f axo-${APP_NAME}

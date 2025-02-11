@@ -5,19 +5,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetGuild(c *gin.Context) {
+func GetGuild(c *gin.Context, r struct {
+	Player string `form:"player"`
+	Key    string `form:"key"`
+}) {
 
-	player := c.Query("player")
-	key := c.Query("key")
-
-	if Config.AccessKey != key {
+	if Config.AccessKey != r.Key {
 		c.Status(403)
 		return
 	}
 
 	var user dbs.User
 	if err := DB.Preload("Guild").First(
-		&user, "bedrock_name = ?", player,
+		&user, "bedrock_name = ?", r.Player,
 	).Error; err != nil {
 		c.Status(500)
 		return

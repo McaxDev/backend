@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetBind(c *gin.Context, r struct {
+func GetBindCode(c *gin.Context, r struct {
 	Player    string
 	Game      string
 	AccessKey string

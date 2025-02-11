@@ -29,6 +29,7 @@ func GetRouter() *gin.Engine {
 
 	r.GET("/get/albums", GetAlbums)
 	r.GET("/get/images", mids.BindReq(GetImages))
+	r.GET("/get/carousel", GetCarousel)
 	r.POST("/add/album", mids.AuthJwt(ajc, AddAlbum))
 	r.POST("/add/image", mids.OnlyAuthJwt(ajc, AddImage))
 	r.POST("/set/album", mids.AuthJwt(ajc, SetAlbum))

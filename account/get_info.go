@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
@@ -8,6 +11,7 @@ import (
 
 func GetMyinfo(c *gin.Context, user *dbs.User) {
 
+	fmt.Println(user.TempMeta)
 	c.JSON(200, utils.Resp("获取成功", nil, user))
 }
 
@@ -29,8 +33,9 @@ func GetUserinfo(c *gin.Context, req struct {
 }
 
 func SetUserInfo(c *gin.Context, user *dbs.User, req struct {
-	Avatar  string
-	Profile string
+	Avatar   string    `json:"avatar"`
+	Birthday time.Time `json:"birthday"`
+	Profile  string    `json:"profile"`
 }) {
 
 	if req.Avatar != "" {

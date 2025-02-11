@@ -1,3 +1,6 @@
-docker build -t mcaxdev/geo . &&
-docker-compose -f /srv/axo/geo/docker-compose.yml up -d &&
-docker logs -f axo-geo
+APP_NAME='geo'
+
+go build -o app . &&
+docker build -t mcaxdev/${APP_NAME} . &&
+docker-compose -f /srv/axo/${APP_NAME}/docker-compose.yml up -d &&
+docker logs -f axo-${APP_NAME}

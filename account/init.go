@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/McaxDev/backend/dbs"
-	"github.com/McaxDev/backend/utils/auth"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
@@ -13,7 +12,6 @@ import (
 var (
 	DB             *gorm.DB
 	Redis          *redis.Client
-	Author         auth.Author
 	ChinaTime      *time.Location
 	BlackListTypes []string
 	isPhone        func(string) bool
@@ -32,8 +30,6 @@ func Init() error {
 		Password: Config.Redis.Password,
 		DB:       Config.Redis.DB,
 	})
-
-	Author = auth.NewAuthor(Redis)
 
 	ChinaTime, err = time.LoadLocation("Asia/Shanghai")
 	if err != nil {

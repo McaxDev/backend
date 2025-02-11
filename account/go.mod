@@ -6,14 +6,12 @@ replace (
 	github.com/McaxDev/backend/dbs => ../dbs
 	github.com/McaxDev/backend/mids => ../mids
 	github.com/McaxDev/backend/utils => ../utils
-	github.com/McaxDev/backend/utils/auth => ../utils/auth
 )
 
 require (
 	github.com/McaxDev/backend/dbs v0.0.0-00010101000000-000000000000
 	github.com/McaxDev/backend/mids v0.0.0-00010101000000-000000000000
 	github.com/McaxDev/backend/utils v0.0.0-20250107184523-ee8e1489704e
-	github.com/McaxDev/backend/utils/auth v0.0.0-00010101000000-000000000000
 	github.com/gin-contrib/cors v1.7.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/redis/go-redis/v9 v9.7.0
