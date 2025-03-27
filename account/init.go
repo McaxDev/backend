@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/McaxDev/backend/dbs"
+	"github.com/McaxDev/backend/utils"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
@@ -21,7 +21,11 @@ var (
 func Init() error {
 	var err error
 
-	if DB, err = dbs.InitDB(Config.DB); err != nil {
+	if err := utils.LoadConfig(&Config); err != nil {
+		return err
+	}
+
+	if DB, err = utils.InitDB(Config.DB); err != nil {
 		return err
 	}
 

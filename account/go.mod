@@ -2,19 +2,13 @@ module github.com/McaxDev/backend/account
 
 go 1.23.3
 
-replace (
-	github.com/McaxDev/backend/dbs => ../dbs
-	github.com/McaxDev/backend/mids => ../mids
-	github.com/McaxDev/backend/utils => ../utils
-)
+replace github.com/McaxDev/backend/utils => ../utils
 
 require (
-	github.com/McaxDev/backend/dbs v0.0.0-00010101000000-000000000000
-	github.com/McaxDev/backend/mids v0.0.0-00010101000000-000000000000
 	github.com/McaxDev/backend/utils v0.0.0-20250107184523-ee8e1489704e
 	github.com/gin-contrib/cors v1.7.3
 	github.com/gin-gonic/gin v1.10.0
-	github.com/redis/go-redis/v9 v9.7.0
+	github.com/redis/go-redis/v9 v9.7.1
 	gorm.io/gorm v1.25.12
 )
 
@@ -34,6 +28,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -51,8 +46,6 @@ require (
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250106144421-5f5ef82da422 // indirect
-	google.golang.org/grpc v1.69.2 // indirect
 	google.golang.org/protobuf v1.36.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.5.7 // indirect

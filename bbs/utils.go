@@ -1,8 +1,8 @@
 package main
 
-import "github.com/McaxDev/backend/dbs"
+import "github.com/McaxDev/backend/utils"
 
-func CheckPostPerm(u *dbs.User, p *dbs.Post) bool {
+func CheckPostPerm(u *utils.User, p *utils.Post) bool {
 
 	if u.Admin {
 		return true
@@ -13,7 +13,7 @@ func CheckPostPerm(u *dbs.User, p *dbs.Post) bool {
 	}
 
 	if p.GuildID != nil && u.GuildID != nil {
-		if *p.GuildID == *u.GuildID && u.GuildRole > 3 {
+		if *p.GuildID == *u.GuildID && *u.GuildRole > 3 {
 			return true
 		}
 	}
@@ -21,7 +21,7 @@ func CheckPostPerm(u *dbs.User, p *dbs.Post) bool {
 	return false
 }
 
-func CheckCommentPerm(u *dbs.User, c *dbs.Comment) bool {
+func CheckCommentPerm(u *utils.User, c *utils.Comment) bool {
 
 	if u.Admin {
 		return true

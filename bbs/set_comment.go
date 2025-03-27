@@ -1,20 +1,19 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/russross/blackfriday/v2"
 )
 
-func SetComment(c *gin.Context, u *dbs.User, r struct {
+func SetComment(c *gin.Context, u *utils.User, r struct {
 	ID       uint
-	Attitude int
+	Attitude *bool
 	Content  string
 	UseMD    bool
 }) {
 
-	comment := dbs.Comment{
+	comment := utils.Comment{
 		Source:   r.Content,
 		Attitude: r.Attitude,
 		UserID:   &u.ID,
@@ -28,11 +27,6 @@ func SetComment(c *gin.Context, u *dbs.User, r struct {
 
 	if !CheckCommentPerm(u, &comment) {
 		c.JSON(403, utils.Resp("权限不足", nil, nil))
-		return
-	}
-
-	if r.Attitude != -1 && r.Attitude != 0 && r.Attitude != 1 {
-		c.JSON(400, utils.Resp("态度不合法", nil, nil))
 		return
 	}
 

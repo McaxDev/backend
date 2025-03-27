@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/mids"
 	"github.com/gin-gonic/gin"
 )
 

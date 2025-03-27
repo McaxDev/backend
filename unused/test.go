@@ -1,4 +1,4 @@
-package dbs
+package utils
 
 type Question struct {
 	Model

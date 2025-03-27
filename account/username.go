@@ -1,13 +1,12 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func SetUsername(c *gin.Context, user *dbs.User, name string) {
+func SetUsername(c *gin.Context, user *utils.User, name string) {
 
 	if err := c.BindJSON(&name); err != nil {
 		c.JSON(400, utils.Resp("用户请求有误", err, nil))
@@ -15,7 +14,7 @@ func SetUsername(c *gin.Context, user *dbs.User, name string) {
 	}
 
 	if err := DB.First(
-		new(dbs.User), "username = ?", name,
+		new(utils.User), "username = ?", name,
 	).Error; err == nil {
 		c.JSON(400, utils.Resp("已经有人使用过这个名称了", nil, nil))
 		return

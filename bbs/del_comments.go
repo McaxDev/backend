@@ -1,14 +1,13 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func DelComments(c *gin.Context, u *dbs.User, IDs []uint) {
+func DelComments(c *gin.Context, u *utils.User, IDs []uint) {
 
-	var comments []dbs.Comment
+	var comments []utils.Comment
 	if err := DB.Find(&comments, "id IN ?", IDs).Error; err != nil {
 		c.JSON(500, utils.Resp("查找评论列表失败", err, nil))
 		return

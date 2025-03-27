@@ -1,25 +1,19 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/russross/blackfriday/v2"
 )
 
-func AddComment(c *gin.Context, u *dbs.User, r struct {
-	ID       uint
+func AddComment(c *gin.Context, u *utils.User, r struct {
+	PostID   uint `json:"postId" binding:"required"`
 	Content  string
 	UseMD    bool
-	Attitude int
+	Attitude *bool
 }) {
 
-	if r.Attitude != -1 && r.Attitude != 0 && r.Attitude != 1 {
-		c.JSON(400, utils.Resp("态度不合法", nil, nil))
-		return
-	}
-
-	data := dbs.Comment{
+	data := utils.Comment{
 		Source:   r.Content,
 		Attitude: r.Attitude,
 		PostID:   &r.ID,

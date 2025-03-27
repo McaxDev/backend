@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	LoadConfig()
 
 	if err := Init(); err != nil {
 		log.Fatalln("初始化失败：", err.Error())

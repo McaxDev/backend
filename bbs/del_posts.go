@@ -1,14 +1,13 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func DelPosts(c *gin.Context, u *dbs.User, IDs []uint) {
+func DelPosts(c *gin.Context, u *utils.User, IDs []uint) {
 
-	var posts []dbs.Post
+	var posts []utils.Post
 	if err := DB.Find(&posts, "id IN ?", IDs).Error; err != nil {
 		c.JSON(500, utils.Resp("查找帖子失败", err, nil))
 		return

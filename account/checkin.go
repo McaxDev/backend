@@ -3,24 +3,23 @@ package main
 import (
 	"time"
 
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func Checkin(c *gin.Context, user *dbs.User) {
+func Checkin(c *gin.Context, u *utils.User, r struct{}) {
 
 	iterator := uint(time.Now().Day())
 
-	if utils.GetBitByIndex(user.Checkin, iterator) {
+	if (u.Checkin>>iterator)&1 == 1 {
 		c.JSON(200, utils.Resp("你今天已经签到过啦", nil, nil))
 		return
 	}
 
-	utils.UpdateBitByIndex(&user.Checkin, iterator, true)
-	user.TempCoin += 1
+	u.Checkin |= (1 << iterator)
+	u.TempCoin += 1
 
-	if err := DB.Save(&user).Error; err != nil {
+	if err := DB.Save(&u).Error; err != nil {
 		c.JSON(500, utils.Resp("签到失败", err, nil))
 		return
 	}
@@ -28,7 +27,7 @@ func Checkin(c *gin.Context, user *dbs.User) {
 	c.JSON(200, utils.Resp("签到成功", nil, nil))
 }
 
-func GetCheckin(c *gin.Context, user *dbs.User) {
+func GetCheckin(c *gin.Context, u *utils.User, r struct{}) {
 
 	type Data struct {
 		Date   int  `json:"data"`
@@ -39,7 +38,7 @@ func GetCheckin(c *gin.Context, user *dbs.User) {
 
 	for i := 1; i <= 31; i++ {
 		datas = append(datas, Data{
-			Date: i, Status: utils.GetBitByIndex(user.Checkin, uint(i)),
+			Date: i, Status: (u.Checkin>>uint(i))&1 == 1,
 		})
 	}
 

@@ -1,33 +1,37 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
+	"bytes"
+
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/russross/blackfriday/v2"
 )
 
-func AddPost(c *gin.Context, u *dbs.User, r struct {
-	Category string
-	Title    string
-	Content  string
-	UseMD    bool
+func AddPost(c *gin.Context, u *utils.User, r struct {
+	ForumID uint   `json:"forumId" binding:"required"`
+	Title   string `json:"title" binding:"required"`
+	Content string `json:"content" binding:"required"`
+	UseMD   bool   `json:"useMd"`
 }) {
 
-	post := dbs.Post{
-		Category: r.Category,
-		Title:    r.Title,
-		Source:   r.Content,
-		UserID:   &u.ID,
-	}
-
+	var html string
 	if r.UseMD {
-		post.Content = string(blackfriday.Run([]byte(r.Content)))
+		var buffer bytes.Buffer
+		if err := MD.Convert([]byte(r.Content), &buffer); err != nil {
+			c.JSON(500, utils.Resp("渲染Markdown失败", err, nil))
+			return
+		}
+		html = buffer.String()
 	} else {
-		post.Content = r.Content
+		html = r.Content
 	}
 
-	if err := DB.Create(&post).Error; err != nil {
+	if err := DB.Create(&utils.Post{
+		ForumID:  &r.ForumID,
+		Title:    r.Title,
+		Markdown: r.Content,
+		HTML:     html,
+	}).Error; err != nil {
 		c.JSON(500, utils.Resp("发帖失败", err, nil))
 		return
 	}

@@ -1,18 +1,21 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
+	"github.com/McaxDev/backend/utils"
+	"github.com/yuin/goldmark"
 	"gorm.io/gorm"
 )
 
 var (
 	DB *gorm.DB
+	MD goldmark.Markdown
 )
 
 func Init() error {
 	var err error
-	if DB, err = dbs.InitDB(Config.DB); err != nil {
+	if DB, err = utils.InitDB(Config.DB); err != nil {
 		return err
 	}
+	MD = goldmark.New()
 	return nil
 }

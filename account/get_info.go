@@ -4,26 +4,25 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func GetMyinfo(c *gin.Context, user *dbs.User) {
+func GetMyinfo(c *gin.Context, u *utils.User, r struct{}) {
 
-	fmt.Println(user.TempMeta)
-	c.JSON(200, utils.Resp("获取成功", nil, user))
+	fmt.Println(u.TempMeta)
+	c.JSON(200, utils.Resp("获取成功", nil, u))
 }
 
-func GetUserinfo(c *gin.Context, req struct {
+func GetUserinfo(c *gin.Context, _ *utils.User, r struct {
 	ID uint `form:"id"`
 }) {
 
-	var user dbs.User
+	var user utils.User
 	if err := DB.Preload("Guild").Preload(
 		"Props",
 	).Preload("Comments").Preload("Albums").First(
-		&user, "id = ?", req.ID,
+		&user, "id = ?", r.ID,
 	).Error; err != nil {
 		c.JSON(500, utils.Resp("查询用户失败", err, nil))
 		return
@@ -32,21 +31,21 @@ func GetUserinfo(c *gin.Context, req struct {
 	c.JSON(200, utils.Resp("查询成功", nil, user))
 }
 
-func SetUserInfo(c *gin.Context, user *dbs.User, req struct {
+func SetUserInfo(c *gin.Context, u *utils.User, r struct {
 	Avatar   string    `json:"avatar"`
 	Birthday time.Time `json:"birthday"`
 	Profile  string    `json:"profile"`
 }) {
 
-	if req.Avatar != "" {
-		user.Avatar = req.Avatar
+	if r.Avatar != "" {
+		u.Avatar = r.Avatar
 	}
 
-	if req.Profile != "" {
-		user.Profile = req.Profile
+	if r.Profile != "" {
+		u.Profile.Content = r.Profile
 	}
 
-	if err := DB.Save(user).Error; err != nil {
+	if err := DB.Save(u).Error; err != nil {
 		c.JSON(500, utils.Resp("资料更新失败", err, nil))
 		return
 	}

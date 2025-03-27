@@ -1,39 +1,44 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func GetSettings(c *gin.Context, user *dbs.User) {
+func GetSettings(c *gin.Context, u *utils.User, r struct{}) {
 
-	type SettingsStruct struct {
-		ID    string `json:"id"`
-		Name  string `json:"name"`
-		Value bool   `json:"value"`
+	if err := DB.Select("setting").First(&u).Error; err != nil {
+		c.JSON(500, utils.Resp("获取用户设置失败", err, nil))
+		return
 	}
 
-	var settings []SettingsStruct
-	for _, item := range utils.SettingsSlice {
-		settings = append(settings, SettingsStruct{
-			ID:    item.ID,
-			Name:  item.Name,
-			Value: user.BoolMeta[item.ID],
-		})
+	if u.Setting == nil {
+		u.Setting = make(map[string]any)
 	}
 
-	c.JSON(200, utils.Resp("获取设置成功", nil, settings))
+	c.JSON(200, utils.Resp("获取成功", nil, gin.H{
+		"order":    utils.SettingOrder,
+		"metadata": utils.SettingMap,
+		"value":    u.Setting,
+	}))
 }
 
-func SetSetting(c *gin.Context, u *dbs.User, r struct {
+func SetSetting(c *gin.Context, u *utils.User, r struct {
 	ID    string
-	Value bool
+	Value any
 }) {
 
-	u.BoolMeta[r.ID] = r.Value
+	if err := DB.Select("setting").First(&u).Error; err != nil {
+		c.JSON(500, utils.Resp("获取用户设置失败", err, nil))
+		return
+	}
 
-	if err := DB.Updates(&u).Error; err != nil {
+	if u.Setting == nil {
+		u.Setting = make(map[string]any)
+	}
+
+	u.Setting[r.ID] = r.Value
+	if err := DB.Save(&u).Error; err != nil {
 		c.JSON(500, utils.Resp("设置更新失败", err, nil))
 		return
 	}

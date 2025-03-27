@@ -1,14 +1,13 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func Signout(c *gin.Context, user *dbs.User) {
+func Signout(c *gin.Context, u *utils.User, _ struct{}) {
 
-	if err := DB.Delete(&user).Error; err != nil {
+	if err := DB.Delete(&u).Error; err != nil {
 		c.JSON(500, utils.Resp("注销失败", err, nil))
 		return
 	}

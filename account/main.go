@@ -8,8 +8,6 @@ import (
 
 func main() {
 
-	LoadConfig()
-
 	if err := Init(); err != nil {
 		log.Fatalf("初始化失败：%v\n", err)
 	}

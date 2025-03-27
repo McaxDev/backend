@@ -3,23 +3,19 @@ package main
 import (
 	"time"
 
-	"github.com/McaxDev/backend/mids"
+	"github.com/McaxDev/backend/utils"
+	u "github.com/McaxDev/backend/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func GetRouter() *gin.Engine {
 
-	ajc := mids.AuthJwtConfig{
-		JWTKey:    Config.JWTKey,
-		DB:        DB,
-		OnlyAdmin: false,
-	}
+	u.InitPreloader(DB, Config.JWTKey)
 
-	v := mids.Verifier{Redis: Redis}
+	v := u.Verifier{Redis: Redis}
 
 	r := gin.Default()
-	r.Use(mids.SetJSONBodyToCtx)
 
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
@@ -30,31 +26,25 @@ func GetRouter() *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	r.GET("/checkin", mids.OnlyAuthJwt(ajc, Checkin))
-	r.GET("/get/blacklist", GetBlackList)
-	r.GET("/get/checkin", mids.OnlyAuthJwt(ajc, GetCheckin))
-	r.GET("/get/myinfo", mids.OnlyAuthJwt(ajc, GetMyinfo, "Guild", "Albums", "Comments", "Props"))
-	r.GET("/get/userinfo", mids.BindReq(GetUserinfo))
-	r.GET("/get/settings", mids.OnlyAuthJwt(ajc, GetSettings))
+	r.GET("/checkin", u.Preload(Checkin, u.LOGIN))
+	r.GET("/get/checkin", u.Preload(GetCheckin, u.LOGIN))
+	r.GET("/get/myinfo", u.Preload(GetMyinfo, u.LOGIN, "Guild", "Albums", "Comments", "Props"))
+	r.GET("/get/userinfo", u.Preload(GetUserinfo, u.LOGIN))
+	r.GET("/get/settings", u.Preload(GetSettings, u.LOGIN))
 
-	r.POST("/login", mids.BindReq(Login))
-	r.POST("/signup", v.Mid("captcha"), v.Mid("email"), mids.BindReq(Signup))
-	r.POST("/signout", v.Mid("captcha"), v.Mid("email"), mids.OnlyAuthJwt(ajc, Signout))
+	r.POST("/login", u.Preload(Login, u.JSON))
+	r.POST("/signup", v.Auth("captcha"), v.Auth("email"), u.Preload(Signup, u.JSON))
+	r.POST("/signout", v.Auth("captcha"), v.Auth("email"), u.Preload(Signout, u.LOGIN))
 
-	r.POST("/bind/phone", v.Mid("phone"), mids.AuthJwt(ajc, BindPhone))
-	r.POST("/bind/email", v.Mid("email"), mids.AuthJwt(ajc, BindEmail))
-	r.POST("/unbind/phone", v.Mid("phone"), mids.AuthJwt(ajc, UnbindPhone))
-	r.POST("/unbind/email", v.Mid("email"), mids.AuthJwt(ajc, UnbindEmail))
+	r.POST("/bind/phone", v.Auth("phone"), u.Preload(BindPhone, u.LOGIN))
+	r.POST("/bind/email", v.Auth("email"), u.Preload(BindEmail, u.LOGIN))
+	r.POST("/unbind/phone", v.Auth("phone"), u.Preload(UnbindPhone, u.LOGIN|u.JSON))
+	r.POST("/unbind/email", v.Auth("email"), u.Preload(UnbindEmail, u.LOGIN|u.JSON))
 
-	r.POST("/set/setting", mids.AuthJwt(ajc, SetSetting))
-	r.POST("/set/username", mids.AuthJwt(ajc, SetUsername))
-	r.POST("/set/password", v.Mid("email"), mids.BindReq(SetPassword))
-	r.POST("/set/userinfo", mids.AuthJwt(ajc, SetUserInfo))
-
-	ajc.OnlyAdmin = true
-
-	r.POST("/set/blacklist", mids.AuthJwt(ajc, SetBlackList))
-	r.DELETE("/del/blacklist", mids.AuthJwt(ajc, DelBlackList))
+	r.POST("/set/setting", u.Preload(SetSetting, u.LOGIN))
+	r.POST("/set/username", u.Preload(SetUsername, u.LOGIN))
+	r.POST("/set/password", v.Auth("email"), utils.Preload(SetPassword, u.LOGIN))
+	r.POST("/set/userinfo", utils.Preload(SetUserInfo, u.LOGIN))
 
 	return r
 }

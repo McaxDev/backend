@@ -4,28 +4,27 @@ import (
 	"errors"
 	"regexp"
 
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func Login(c *gin.Context, req struct {
+func Login(c *gin.Context, u *utils.User, r struct {
 	Account  string
 	Password string
 }) {
 
-	query := DB.Model(new(dbs.User))
-	switch AccountType(req.Account) {
+	query := DB.Model(new(utils.User))
+	switch AccountType(r.Account) {
 	case "phone":
-		query = query.Where("phone = ?", req.Account)
+		query = query.Where("phone = ?", r.Account)
 	case "email":
-		query = query.Where("email = ?", req.Account)
+		query = query.Where("email = ?", r.Account)
 	default:
-		query = query.Where("name = ?", req.Account)
+		query = query.Where("name = ?", r.Account)
 	}
 
-	var user dbs.User
+	var user utils.User
 	if err := query.First(&user).Error; errors.Is(
 		err, gorm.ErrRecordNotFound,
 	) {
@@ -36,7 +35,7 @@ func Login(c *gin.Context, req struct {
 		return
 	}
 
-	if req.Password != user.Password {
+	if r.Password != user.Password {
 		c.JSON(400, utils.Resp("密码不正确", nil, nil))
 		return
 	}

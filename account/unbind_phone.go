@@ -1,12 +1,11 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func UnbindPhone(c *gin.Context, user *dbs.User, req struct {
+func UnbindPhone(c *gin.Context, user *utils.User, req struct {
 	PhoneID string
 }) {
 
