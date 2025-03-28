@@ -7,25 +7,25 @@ import (
 	"strconv"
 )
 
-type DBConfig struct {
-	User     string
-	Password string
-	Host     string
-	Port     string
-	Name     string
+type MySQLConfig struct {
+	User     string `env:"MYSQL_USER" def:"root"`
+	Password string `env:"MYSQL_PASSWORD"`
+	Host     string `env:"MYSQL_HOST" def:"127.0.0.1"`
+	Port     string `env:"MYSQL_PORT" def:"3306"`
+	Name     string `env:"MYSQL_NAME"`
 }
 
 type SSLConfig struct {
-	Enable bool
-	Cert   string
-	Key    string
+	Enable bool   `env:"SSL_ENABLE" def:"false"`
+	Cert   string `env:"CERT"`
+	Key    string `env:"KEY"`
 }
 
 type RedisConfig struct {
-	Host     string
-	Port     string
-	Password string
-	DB       int
+	Host     string `env:"HOST" def:"127.0.0.1"`
+	Port     string `env:"PORT" def:"6379"`
+	Password string `env:"PASSWORD"`
+	DB       int    `env:"DB"`
 }
 
 func LoadConfig(cfg any) error {

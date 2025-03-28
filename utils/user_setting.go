@@ -7,16 +7,6 @@ type Setting struct {
 	Default any    `json:"default"`
 }
 
-func GetSetting[T any](user *User, id string) T {
-
-	setting, exists := user.Setting[id]
-	if !exists {
-		return SettingMap[id].Default.(T)
-	}
-
-	return setting.(T)
-}
-
 type UserSetting struct {
 	PubEmail    *bool   `json:"pubEmail,omitempty" label:"公开邮箱" default:"false" group:"privacy"`
 	PubPhone    *bool   `json:"pubPhone,omitempty" label:"公开手机号" default:"false" group:"privacy"`

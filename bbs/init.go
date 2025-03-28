@@ -13,7 +13,10 @@ var (
 
 func Init() error {
 	var err error
-	if DB, err = utils.InitDB(Config.DB); err != nil {
+	if err := utils.LoadConfig(&Config); err != nil {
+		return err
+	}
+	if DB, err = utils.InitDB(Config.MySQL); err != nil {
 		return err
 	}
 	MD = goldmark.New()

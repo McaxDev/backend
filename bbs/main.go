@@ -1,9 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"log"
-
-	"github.com/McaxDev/backend/utils"
 )
 
 func main() {
@@ -12,9 +11,7 @@ func main() {
 		log.Fatalln("初始化失败：", err.Error())
 	}
 
-	if err := utils.RunGin(
-		GetRouter(), Config.Port, Config.SSL,
-	); err != nil {
-		log.Fatalln("启动失败：", err.Error())
+	if err := GetRouter().Run(":" + Config.Port); err != nil {
+		fmt.Println(err)
 	}
 }

@@ -1,3 +1,6 @@
-docker build -t mcaxdev/bbs . &&
-docker-compose -f /srv/axo/bbs/docker-compose.yml up -d &&
-docker logs -f axo-bbs
+APP_NAME='bbs'
+
+go build -o app . &&
+docker build -t mcaxdev/${APP_NAME} . &&
+docker-compose -f /srv/axo/${APP_NAME}/docker-compose.yml up -d &&
+docker logs -f axo-${APP_NAME}

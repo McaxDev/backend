@@ -14,9 +14,9 @@ func (user *User) ExecWithCoins(
 ) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 
-		balance := user.PermCoin
+		balance := user.DailyCoin
 		if !permOnly {
-			balance += user.TempCoin
+			balance += user.HonorCoin
 		}
 
 		if balance < costs {
@@ -24,12 +24,12 @@ func (user *User) ExecWithCoins(
 		}
 
 		if permOnly {
-			user.PermCoin -= costs
-		} else if user.TempCoin < costs {
-			user.PermCoin -= (costs - user.TempCoin)
-			user.TempCoin = 0
+			user.HonorCoin -= costs
+		} else if user.DailyCoin < costs {
+			user.HonorCoin -= (costs - user.DailyCoin)
+			user.DailyCoin = 0
 		} else {
-			user.TempCoin -= costs
+			user.DailyCoin -= costs
 		}
 
 		if err := tx.Save(&user).Error; err != nil {

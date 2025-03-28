@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetForums(c *gin.Context, _ *utils.User, _ struct{}) {
+func GetForums(c *gin.Context) {
 
 	var forums []utils.ForumGroup
 	if err := DB.
