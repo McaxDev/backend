@@ -6,14 +6,13 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func AddImage(c *gin.Context, user *dbs.User) {
+func AddImage(c *gin.Context, user *utils.User) {
 
 	albumIDInt, err := strconv.Atoi(c.PostForm("album"))
 	if err != nil {
@@ -22,7 +21,7 @@ func AddImage(c *gin.Context, user *dbs.User) {
 	}
 	albumID := uint(albumIDInt)
 
-	var album dbs.Album
+	var album utils.Album
 	if err := DB.Where("id = ?", albumID).Error; err != nil {
 		c.JSON(500, utils.Resp("查找相册失败", err, nil))
 		return
@@ -68,12 +67,11 @@ func AddImage(c *gin.Context, user *dbs.User) {
 			return err
 		}
 
-		return tx.Create(&dbs.Image{
-			Filename:    filename,
-			Title:       title,
-			Description: description,
-			UserID:      &user.ID,
-			AlbumID:     &albumID,
+		return tx.Create(&utils.Image{
+			Filename:   filename,
+			Label:      &title,
+			UploaderID: &user.ID,
+			AlbumID:    albumID,
 		}).Error
 	}); err != nil {
 		c.JSON(500, utils.Resp("文件上传失败", err, nil))

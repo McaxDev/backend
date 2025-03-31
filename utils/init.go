@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitDB(config MySQLConfig) (*gorm.DB, error) {
+func InitMySQL(config MySQLConfig) (*gorm.DB, error) {
 
 	var db *gorm.DB
 	var err error

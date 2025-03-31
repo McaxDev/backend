@@ -1,14 +1,13 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func DelAlbum(c *gin.Context, user *dbs.User, id uint) {
+func DelAlbum(c *gin.Context, user *utils.User, id uint) {
 
-	var album dbs.Album
+	var album utils.Album
 	if err := DB.Where("id = ?", id).First(
 		&album,
 	).Error; err != nil {
@@ -21,7 +20,7 @@ func DelAlbum(c *gin.Context, user *dbs.User, id uint) {
 		return
 	}
 
-	if len(album.Images) != 0 {
+	if len(album.Photos) != 0 {
 		c.JSON(400, utils.Resp("相册不为空，无法删除", nil, nil))
 		return
 	}

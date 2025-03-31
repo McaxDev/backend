@@ -6,10 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
-func LoadUserBaseInfo(db *gorm.DB) *gorm.DB {
-	return db.Select("name", "exp").Preload("Avatar", func(db *gorm.DB) *gorm.DB {
-		return db.Select("filename")
-	})
+func LoadOwnerInfo(db *gorm.DB) *gorm.DB {
+	return db.
+		Select("id", "name", "avatar_id", "cover_id", "exp").
+		Preload("Avatar", LoadFilename).
+		Preload("Cover", LoadFilename)
+}
+
+func LoadFilename(db *gorm.DB) *gorm.DB {
+	return db.Select("id", "filename")
 }
 
 func CreateForeignKey(db *gorm.DB, fk ForeignKey) error {

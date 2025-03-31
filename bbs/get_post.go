@@ -14,13 +14,13 @@ func GetPost(c *gin.Context, _ *utils.User, r struct {
 
 	var post utils.Post
 	if err := DB.
-		Preload("Author", utils.LoadUserBaseInfo).
+		Preload("Author", utils.LoadOwnerInfo).
 		Preload("Reviews", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Select("id", "updated_at", "markdown", "html", "attitude").
+				Select("id", "updated_at", "content", "attitude", "author_id").
 				Offset(r.Offset).
 				Limit(r.Limit).
-				Preload("Author", utils.LoadUserBaseInfo)
+				Preload("Author", utils.LoadOwnerInfo)
 		}).
 		First(&post, "id = ?", r.ID).
 		Error; err != nil {
@@ -31,7 +31,7 @@ func GetPost(c *gin.Context, _ *utils.User, r struct {
 	var count int64
 	if err := DB.
 		Model(new(utils.Review)).
-		Where("post_id = ?", r.ID).
+		Where("refer_id = ? AND refer_type = 'posts'", r.ID).
 		Count(&count).
 		Error; err != nil {
 		c.JSON(500, utils.Resp("查询帖子评论数量失败", err, nil))

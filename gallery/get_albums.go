@@ -1,18 +1,17 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func GetAlbums(c *gin.Context) {
 
-	var data []dbs.Album
-	if err := DB.Preload("User").Preload("Guild").Find(&data).Error; err != nil {
+	var data []utils.Album
+	if err := DB.Preload("Cover", utils.LoadFilename).Find(&data).Error; err != nil {
 		c.JSON(500, utils.Resp("获取相册列表失败", err, nil))
 		return
 	}
 
-	c.JSON(200, utils.Resp("", nil, data))
+	c.JSON(200, utils.Resp("获取相册列表成功", nil, data))
 }

@@ -1,15 +1,14 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func Delete(c *gin.Context, user *dbs.User, req uint) {
+func Delete(c *gin.Context, user *utils.User, req uint) {
 
 	if err := DB.Where("id = ?", req).Delete(
-		new(dbs.Wiki),
+		new(utils.Wiki),
 	).Error; err != nil {
 		c.JSON(400, utils.Resp("删除失败", err, nil))
 		return

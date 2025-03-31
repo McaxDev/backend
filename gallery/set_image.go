@@ -1,18 +1,17 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func SetImage(c *gin.Context, user *dbs.User, req struct {
+func SetImage(c *gin.Context, user *utils.User, req struct {
 	ID          uint
 	Title       string
 	Description string
 }) {
 
-	var image dbs.Image
+	var image utils.Image
 	if err := DB.Preload("Album").Where("id = ?", req.ID).First(
 		&image,
 	).Error; err != nil {

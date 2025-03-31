@@ -1,12 +1,11 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
-func SetAlbum(c *gin.Context, user *dbs.User, req struct {
+func SetAlbum(c *gin.Context, user *utils.User, req struct {
 	ID        uint
 	Cover     string
 	Title     string
@@ -14,7 +13,7 @@ func SetAlbum(c *gin.Context, user *dbs.User, req struct {
 	GuildID   uint
 }) {
 
-	var album dbs.Album
+	var album utils.Album
 	if err := DB.Where("id = ?", req.ID).First(
 		&album,
 	).Error; err != nil {

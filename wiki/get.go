@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -12,11 +11,11 @@ type Anchor struct {
 	SubAnchors []Anchor `json:"subAnchors"`
 }
 
-func Get(c *gin.Context, req struct {
+func Get(c *gin.Context, _ utils.User, req struct {
 	Path string `form:"path"`
 }) {
 
-	var data dbs.Wiki
+	var data utils.Wiki
 	if err := DB.Where("path = ?", req.Path).First(
 		&data,
 	).Error; err == gorm.ErrRecordNotFound {

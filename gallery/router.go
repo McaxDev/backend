@@ -3,20 +3,13 @@ package main
 import (
 	"time"
 
-	"github.com/McaxDev/backend/mids"
+	u "github.com/McaxDev/backend/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func GetRouter() *gin.Engine {
 	r := gin.Default()
-	r.Use(mids.SetJSONBodyToCtx)
-
-	ajc := mids.AuthJwtConfig{
-		JWTKey:    Config.JWTKey,
-		DB:        DB,
-		OnlyAdmin: false,
-	}
 
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
@@ -27,15 +20,8 @@ func GetRouter() *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	r.GET("/get/albums", GetAlbums)
-	r.GET("/get/images", mids.BindReq(GetImages))
-	r.GET("/get/carousel", GetCarousel)
-	r.POST("/add/album", mids.AuthJwt(ajc, AddAlbum))
-	r.POST("/add/image", mids.OnlyAuthJwt(ajc, AddImage))
-	r.POST("/set/album", mids.AuthJwt(ajc, SetAlbum))
-	r.POST("/set/image", mids.AuthJwt(ajc, SetImage))
-	r.DELETE("/del/album", mids.AuthJwt(ajc, DelAlbum))
-	r.DELETE("/del/image", mids.AuthJwt(ajc, DelImage))
+	r.GET("/albums", GetAlbums)
+	r.GET("/album", u.Preload(GetAlbum, u.QUERY))
 
 	return r
 }

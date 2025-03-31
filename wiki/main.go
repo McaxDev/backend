@@ -1,11 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
-	"github.com/McaxDev/backend/mids"
-	"github.com/McaxDev/backend/utils"
+	u "github.com/McaxDev/backend/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -18,14 +18,7 @@ func main() {
 		log.Fatalf("服务启动失败%v\n", err)
 	}
 
-	ajc := mids.AuthJwtConfig{
-		JWTKey:    Config.JWTKey,
-		DB:        DB,
-		OnlyAdmin: true,
-	}
-
 	r := gin.Default()
-	r.Use(mids.SetJSONBodyToCtx)
 
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
@@ -36,12 +29,8 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	r.GET("/list", List)
-	r.GET("/get", mids.BindReq(Get))
-	r.POST("/edit", mids.AuthJwt(ajc, Edit))
-	r.DELETE("/delete", mids.AuthJwt(ajc, Delete))
+	r.GET("/wikis", GetWikis)
+	r.GET("/document", u.Preload(GetDocument, u.QUERY))
 
-	if err := utils.RunGin(r, "8080", Config.SSL); err != nil {
-		log.Fatalf("服务启动失败：%v\n", err)
-	}
+	fmt.Printf("Running: %w\n", r.Run(":"+Config.Port))
 }

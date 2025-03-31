@@ -1,0 +1,302 @@
+package utils
+
+import (
+	"math"
+	"time"
+
+	"gorm.io/gorm"
+)
+
+type ForeignKey struct {
+	Parent     string
+	Children   string
+	ForeignKey string
+	Action     string
+}
+
+var Constraints = []ForeignKey{
+	{"images", "users", "avatar_id", "RESTRICT"},
+	{"images", "users", "cover_id", "RESTRICT"},
+	{"guilds", "users", "guild_id", "SET NULL"},
+
+	{"images", "guilds", "avatar_id", "RESTRICT"},
+	{"images", "guilds", "cover_id", "RESTRICT"},
+
+	{"images", "prop_types", "icon_id", "RESTRICT"},
+
+	{"users", "images", "uploader_id", "CASCADE"},
+	{"albums", "images", "album_id", "CASCADE"},
+
+	{"guilds", "packs", "owner_id", "CASCADE"},
+	{"users", "packs", "owner_id", "CASCADE"},
+
+	{"guilds", "albums", "owner_id", "CASCADE"},
+	{"users", "albums", "owner_id", "CASCADE"},
+	{"images", "albums", "cover_id", "RESTRICT"},
+
+	{"packs", "props", "pack_id", "CASCADE"},
+	{"prop_types", "props", "prop_type_id", "CASCADE"},
+
+	{"wiki_groups", "wikis", "wiki_group_id", "CASCADE"},
+
+	{"forum_groups", "forums", "forum_group_id", "CASCADE"},
+	{"images", "forums", "cover_id", "RESTRICT"},
+	{"guilds", "forums", "guild_id", "CASCADE"},
+
+	{"users", "posts", "author_id", "CASCADE"},
+	{"forums", "posts", "forum_id", "CASCADE"},
+
+	{"posts", "reviews", "refer_id", "CASCADE"},
+	{"reviews", "reviews", "refer_id", "CASCADE"},
+	{"albums", "reviews", "refer_id", "CASCADE"},
+	{"users", "reviews", "author_id", "CASCADE"},
+}
+
+var Tables = []any{
+	new(Image),      // 图片表
+	new(User),       // 用户表
+	new(Guild),      // 公会表
+	new(Wiki),       // 文档表
+	new(WikiGroup),  // 文档组表
+	new(Album),      // 相册表
+	new(ForumGroup), // 论坛组表
+	new(Forum),      // 论坛表
+	new(Post),       // 帖子表
+	new(Review),     // 评论表
+	new(Prop),       // 道具表
+	new(Pack),       // 包裹表
+	new(PropType),   // 道具类型表
+	new(Online),     // 在线记录表
+}
+
+type Content struct {
+	Text string  `json:"text"`
+	HTML *string `json:"html"`
+}
+
+type Owner struct {
+	Name     string `json:"name" gorm:"type:VARCHAR(255);not null;unique;comment:名称"`
+	AvatarID *uint  `json:"-" gorm:"index;comment:头像图片"`
+	Avatar   *Image `json:"avatar" gorm:"foreignKey:AvatarID"`
+	CoverID  *uint  `json:"-" gorm:"index;comment:封面图片"`
+	Cover    *Image `json:"cover" gorm:"foreignKey:CoverID"`
+	Exp      uint   `json:"exp" gorm:"not null;comment:经验值"`
+	Level    uint   `json:"level" gorm:"-"`
+}
+
+func (o *Owner) Load(db *gorm.DB, table string, id uint) error {
+	if err := db.
+		Table(table).
+		Preload("Avatar", func(tx *gorm.DB) *gorm.DB {
+			return tx.Select("filename")
+		}).
+		Preload("Cover", func(tx *gorm.DB) *gorm.DB {
+			return tx.Select("filename")
+		}).
+		First(&o, "id = ?", id).
+		Error; err != nil {
+		return err
+	}
+	result := uint(math.Floor(math.Sqrt(float64(o.Exp)) / 10))
+	if result < 6 {
+		o.Level = result
+	} else {
+		o.Level = 6
+	}
+	return nil
+}
+
+type User struct {
+	Owner
+	ID        uint        `json:"id" gorm:"primaryKey;comment:ID"`
+	CreatedAt time.Time   `json:"createdAt" gorm:"comment:创建时间"`
+	UpdatedAt time.Time   `json:"updatedAt" gorm:"comment:更新时间"`
+	Password  string      `json:"-" gorm:"type:VARCHAR(255);not null;comment:密码"`
+	Admin     bool        `json:"admin" gorm:"not null;comment:是否管理员"`
+	Voter     bool        `json:"voter" gorm:"not null;comment:是否议员"`
+	IsMale    *bool       `json:"isMale" gorm:"comment:性别"`
+	Profile   Content     `json:"profile" gorm:"type:JSON;serializer:json;not null;comment:个人介绍"`
+	Birthday  *time.Time  `json:"birthday" gorm:"comment:生日"`
+	Location  *string     `json:"location" gorm:"type:VARCHAR(255);comment:地址"`
+	DailyCoin uint        `json:"dailyCoin" gorm:"not null;comment:签到币"`
+	HonorCoin uint        `json:"honorCoin" gorm:"not null;comment:贡献币"`
+	Checkin   int64       `json:"-" gorm:"not null;comment:签到记录"`
+	Email     string      `json:"email" gorm:"type:VARCHAR(255);not null;unique;comment:邮箱"`
+	QQ        *string     `json:"qq" gorm:"type:VARCHAR(255);unique;comment:QQ号"`
+	MCBEName  *string     `json:"mcbeName" gorm:"type:VARCHAR(255);unique;comment:MCBE用户名"`
+	MCJEName  *string     `json:"mcjeName" gorm:"type:VARCHAR(255);unique;comment:MCJE用户名"`
+	GuildID   *uint       `json:"-" gorm:"index;comment:所属公会"`
+	Guild     *Guild      `json:"guild"`
+	GuildRole *uint       `json:"guildRole" gorm:"comment:公会身份"`
+	Donation  uint        `json:"donation" gorm:"not null;comment:捐赠数额"`
+	Setting   UserSetting `json:"setting" gorm:"type:JSON;serializer:json;not null;comment:用户设置"`
+	Reviews   []Review    `json:"reviews" gorm:"foreignKey:AuthorID"`
+	Messages  []Review    `json:"messages" gorm:"foreignKey:ReferID"`
+	Packs     []Pack      `json:"packs" gorm:"foreignKey:OwnerID"`
+	Albums    []Album     `json:"albums" gorm:"foreignKey:OwnerID"`
+}
+
+type WikiGroup struct {
+	ID    uint   `json:"id" gorm:"primaryKey;comment:ID"`
+	Label string `json:"label" gorm:"type:VARCHAR(255);not null;unique;comment:名称"`
+	Wikis []Wiki `json:"wikis"`
+}
+
+type Wiki struct {
+	ID          uint      `json:"id" gorm:"primaryKey;comment:ID"`
+	CreatedAt   time.Time `json:"createdAt" gorm:"comment:创建时间"`
+	UpdatedAt   time.Time `json:"updatedAt" gorm:"comment:更新时间"`
+	Path        string    `json:"path" gorm:"type:VARCHAR(255);not null;unique;comment:路径"`
+	Title       string    `json:"title" gorm:"type:VARCHAR(255);not null;unique;comment:标题"`
+	Content     Content   `json:"content" gorm:"type:JSON;serializer:json;not null;comment:内容"`
+	WikiGroupID uint      `json:"-" gorm:"index;not null;comment:文档组"`
+	Reviews     []Review  `json:"reviews" gorm:"foreignKey:Refer"`
+}
+
+type Online struct {
+	ID     uint      `json:"id" gorm:"primaryKey;comment:ID"`
+	Time   time.Time `json:"createdAt" gorm:"comment:创建时间"`
+	Server string    `json:"server" gorm:"type:VARCHAR(255);not null;index;comment:服务器"`
+	Count  *int64    `json:"count" gorm:"comment:在线人数"`
+}
+
+type Guild struct {
+	Owner
+	ID        uint      `json:"id" gorm:"primaryKey;comment:ID"`
+	CreatedAt time.Time `json:"createdAt" gorm:"comment:创建时间"`
+	UpdatedAt time.Time `json:"updatedAt" gorm:"comment:更新时间"`
+	Count     uint      `json:"count" gorm:"not null;comment:公会人数"`
+	Profile   Content   `json:"profile" gorm:"type:JSON;serializer:json;not null;comment:公会介绍"`
+	Notice    Content   `json:"notice" gorm:"type:JSON;serializer:json;not null;comment:公会公告"`
+	Money     uint      `json:"money" gorm:"not null;comment:公会资金"`
+	Members   []User    `json:"members" gorm:"foreignKey:GuildID"`
+	Packs     []Pack    `json:"packs" gorm:"foreignKey:OwnerID"`
+	Albums    []Album   `json:"albums" gorm:"foreignKey:OwnerID"`
+	Forums    []Forum   `json:"forums" gorm:"foreignKey:GuildID"`
+}
+
+type Album struct {
+	ID        uint      `json:"id" gorm:"primaryKey;comment:ID"`
+	CreatedAt time.Time `json:"createdAt" gorm:"comment:创建时间"`
+	UpdatedAt time.Time `json:"updatedAt" gorm:"comment:更新时间"`
+	CoverID   *uint     `json:"-" gorm:"index;comment:封面ID"`
+	Cover     *Image    `json:"cover" gorm:"foreignKey:CoverID"`
+	Path      string    `json:"path" gorm:"type:VARCHAR(255);not null;unique;comment:路径"`
+	Title     string    `json:"title" gorm:"type:VARCHAR(255);not null;unique;comment:标题"`
+	Profile   Content   `json:"profile" gorm:"type:JSON;serializer:json;not null;comment:简介"`
+	Pinned    bool      `json:"pinned" gorm:"not null;comment:是否置顶"`
+	Protected bool      `json:"protected" gorm:"not null;comment:仅创建者修改"`
+	OwnerID   uint      `json:"-" gorm:"index;not null;comment:拥有者ID"`
+	OwnerType string    `json:"-" gorm:"polymorphic:Owner;comment:拥有者类型"`
+	Owner     Owner     `json:"owner" gorm:"-"`
+	Photos    []Image   `json:"photos"`
+	Reviews   []Review  `json:"reviews" gorm:"foreignKey:ReferID"`
+}
+
+func (a *Album) AfterFind(db *gorm.DB) error {
+	return a.Owner.Load(db, a.OwnerType, a.OwnerID)
+}
+
+type Image struct {
+	ID         uint      `json:"id" gorm:"primaryKey;comment:ID"`
+	CreatedAt  time.Time `json:"createdAt" gorm:"comment:创建时间"`
+	Filename   string    `json:"filename" gorm:"type:VARCHAR(255);not null;unique;comment:文件名"`
+	Label      *string   `json:"label" gorm:"type:VARCHAR(255);comment:标题"`
+	Profile    *string   `json:"profile" gorm:"type:VARCHAR(255);comment:简介"`
+	Likes      *uint     `json:"likes" gorm:"comment:点赞"`
+	UploaderID uint      `json:"-" gorm:"index;not null;comment:上传者用户ID"`
+	Uploader   *User     `json:"uploader" gorm:"foreignKey:UploaderID"`
+	AlbumID    uint      `json:"-" gorm:"index;not null;comment:相册ID"`
+	Album      *Album    `json:"album"`
+}
+
+type ForumGroup struct {
+	ID     uint    `json:"id" gorm:"primaryKey;comment:ID"`
+	Label  string  `json:"label" gorm:"type:VARCHAR(255);not null;unique;comment:标题"`
+	Forums []Forum `json:"forums"`
+}
+
+type Forum struct {
+	ID           uint   `json:"id" gorm:"primaryKey;comment:ID"`
+	ForumGroupID uint   `json:"-" gorm:"index;not null;comment:论坛组ID"`
+	Path         string `json:"path" gorm:"type:VARCHAR(255);not null;unique;comment:路径"`
+	Title        string `json:"title" gorm:"type:VARCHAR(255);not null;unique;comment:标题"`
+	Profile      string `json:"profile" gorm:"type:VARCHAR(255);not null;comment:简介"`
+	CoverID      *uint  `json:"-" gorm:"index;comment:封面ID"`
+	Cover        *Image `json:"cover" gorm:"foreignKey:CoverID"`
+	GuildID      *uint  `json:"-" gorm:"index;comment:公会ID"`
+	Guild        *Guild `json:"guild"`
+	Posts        []Post `json:"posts"`
+}
+
+type Post struct {
+	ID        uint      `json:"id" gorm:"primaryKey;comment:ID"`
+	CreatedAt time.Time `json:"createdAt" gorm:"comment:创建时间"`
+	UpdatedAt time.Time `json:"updatedAt" gorm:"comment:更新时间"`
+	Pinned    bool      `json:"pinned" gorm:"not null;comment:是否置顶"`
+	Title     string    `json:"title" gorm:"type:VARCHAR(255);not null;comment:标题"`
+	ForumID   uint      `json:"-" gorm:"index;not null;comment:论坛ID"`
+	Forum     *Forum    `json:"forum"`
+	Content   Content   `json:"content" gorm:"type:JSON;serializer:json;not null;comment:原内容"`
+	AuthorID  uint      `json:"-" gorm:"index;not null;comment:作者ID"`
+	Author    User      `json:"author" gorm:"foreignKey:AuthorID"`
+	Reviews   []Review  `json:"reviews" gorm:"foreignKey:ReferID"`
+}
+
+type Review struct {
+	ID        uint      `json:"id" gorm:"primaryKey;comment:ID"`
+	UpdatedAt time.Time `json:"updatedAt" gorm:"comment:更新时间"`
+	Content   Content   `json:"content" gorm:"type:JSON;serializer:json;not null;comment:源内容"`
+	Attitude  *bool     `json:"attitude" gorm:"comment:态度"`
+	AuthorID  uint      `json:"-" gorm:"index;not null;comment:作者ID"`
+	Author    *User     `json:"author" gorm:"foreignKey:AuthorID"`
+	ReferID   uint      `json:"-" gorm:"index;comment:指向ID"`
+	ReferType string    `json:"-" gorm:"polymorphic:Refer"`
+	Refer     string    `json:"refer" gorm:"-"`
+	Reviews   []Review  `json:"reviews" gorm:"foreignKey:ReferID"`
+}
+
+var ReferMap = map[string]string{
+	"users":   "name",
+	"albums":  "title",
+	"posts":   "title",
+	"reviews": "content",
+}
+
+func (r *Review) AfterFind(db *gorm.DB) *gorm.DB {
+	return db.Table(r.ReferType).Select(ReferMap[r.ReferType]).First(&r.Refer, "id = ?", r.ReferID)
+}
+
+type Pack struct {
+	ID        uint      `json:"id" gorm:"primaryKey;comment:ID"`
+	CreatedAt time.Time `json:"createdAt" gorm:"comment:创建时间"`
+	UpdatedAt time.Time `json:"updatedAt" gorm:"comment:更新时间"`
+	Name      string    `json:"name" gorm:"type:VARCHAR(255);not null;comment:名称"`
+	Props     []Prop    `json:"props"`
+	OwnerID   uint      `json:"-" gorm:"index;comment:拥有者ID"`
+	OwnerType string    `json:"-" gorm:"polymorphic:Owner;comment:拥有者类型"`
+	Owner     Owner     `json:"owner" gorm:"-"`
+}
+
+func (p *Pack) AfterFind(db *gorm.DB) error {
+	return p.Owner.Load(db, p.OwnerType, p.OwnerID)
+}
+
+type Prop struct {
+	ID         uint      `json:"id" gorm:"primaryKey;comment:ID"`
+	UpdatedAt  time.Time `json:"updatedAt" gorm:"comment:更新时间"`
+	PackID     uint      `json:"-" gorm:"index;not null;comment:包裹ID"`
+	PropTypeID uint      `json:"-" gorm:"index;not null;comment:道具类型ID"`
+	PropType   PropType  `json:"propType"`
+	Count      uint      `json:"count" gorm:"not null;comment:数量"`
+}
+
+type PropType struct {
+	ID       uint   `json:"id" gorm:"primaryKey;comment:ID"`
+	Label    string `json:"label" gorm:"type:VARCHAR(255);not null;unique;comment:道具名称"`
+	Profile  string `json:"profile" gorm:"type:TEXT;not null;comment:道具简介"`
+	IconID   *uint  `json:"-" gorm:"index;comment:图标ID"`
+	Icon     *Image `json:"icon" gorm:"foreignKey:IconID"`
+	Function string `json:"function" gorm:"type:VARCHAR(255);not null;comment:功能"`
+	Params   []byte `json:"params" gorm:"type:JSON;serializer:json;not null;comment:功能参数"`
+}

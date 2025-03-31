@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
+	"github.com/McaxDev/backend/utils"
 	"gorm.io/gorm"
 )
 
@@ -13,8 +13,8 @@ func Init() error {
 
 	var err error
 
-	if DB, err = dbs.InitDB(
-		Config.DB,
+	if DB, err = utils.InitMySQL(
+		Config.MySQL,
 	); err != nil {
 		return err
 	}

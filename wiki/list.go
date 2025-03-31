@@ -1,14 +1,13 @@
 package main
 
 import (
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func List(c *gin.Context) {
 
-	var datas []dbs.Wiki
+	var datas []utils.Wiki
 	if err := DB.Select(
 		"ID", "Path", "Title", "Category",
 	).Find(&datas).Error; err != nil {

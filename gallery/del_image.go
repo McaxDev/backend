@@ -5,15 +5,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/McaxDev/backend/dbs"
 	"github.com/McaxDev/backend/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func DelImage(c *gin.Context, user *dbs.User, ids []uint) {
+func DelImage(c *gin.Context, user *utils.User, ids []uint) {
 
-	var images []dbs.Image
+	var images []utils.Image
 	if err := DB.Preload("Album").Where("id IN ?", ids).Find(
 		&images,
 	).Error; err != nil {
@@ -24,7 +23,7 @@ func DelImage(c *gin.Context, user *dbs.User, ids []uint) {
 	for _, image := range images {
 		if !CheckImagePerm(user, &image) {
 			c.JSON(400, utils.Resp(
-				fmt.Sprint("你无权删除", image.Title),
+				fmt.Sprint("你无权删除", image.Label),
 				nil, nil,
 			))
 			return
@@ -41,7 +40,7 @@ func DelImage(c *gin.Context, user *dbs.User, ids []uint) {
 			return tx.Delete(&image).Error
 		}); err != nil {
 			c.JSON(500, utils.Resp(fmt.Sprintf(
-				"图片%s删除失败", image.Title,
+				"图片%s删除失败", image.Label,
 			), err, nil))
 		}
 	}
